@@ -1,0 +1,32 @@
+
+=== true between-provider SD 0.5; true age effect: none (null); 1000 replicates ===
+estimator   median OR      [2.5%, 97.5%]  p<0.05 (%)
+naive           0.458     [0.261, 0.845]        75.2
+adj. size       1.027     [0.521, 2.166]         6.1
+RC              1.030     [0.677, 2.920]        11.6
+RC + size       1.056     [0.720, 5.792]         5.4
+oracle          1.005     [0.573, 1.746]         5.0
+
+=== true between-provider SD 0.5; true age effect: OR 0.70 in outer true quartiles; 1000 replicates ===
+estimator   median OR      [2.5%, 97.5%]  p<0.05 (%)
+naive           0.444     [0.273, 0.798]        80.3
+adj. size       0.981     [0.541, 1.949]         4.8
+RC              0.987     [0.658, 2.526]        16.4
+RC + size       1.007     [0.714, 3.685]         4.7
+oracle          0.718     [0.415, 1.189]        24.6
+
+=== true between-provider SD 1.77; true age effect: none (null); 1000 replicates ===
+estimator   median OR      [2.5%, 97.5%]  p<0.05 (%)
+naive           0.679     [0.391, 1.144]        30.8
+adj. size       1.003     [0.559, 1.857]         3.8
+RC              1.013     [0.807, 1.298]         1.8
+RC + size       1.011     [0.702, 1.468]         4.2
+oracle          1.009     [0.541, 1.780]         6.8
+
+=== true between-provider SD 1.77; true age effect: OR 0.70 in outer true quartiles; 1000 replicates ===
+estimator   median OR      [2.5%, 97.5%]  p<0.05 (%)
+naive           0.612     [0.365, 1.045]        45.1
+adj. size       0.896     [0.522, 1.620]         7.8
+RC              0.957     [0.771, 1.204]         3.6
+RC + size       0.919     [0.661, 1.301]         7.5
+oracle          0.726     [0.429, 1.204]        23.1
