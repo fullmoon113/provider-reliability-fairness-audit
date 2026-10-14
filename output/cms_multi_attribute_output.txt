@@ -1,0 +1,54 @@
+          attribute   year       n  observed_var  expected_sampling_var   ratio  sigma2_true  median_R  share_R_ge_0_7
+           mean age year 1 1198754       29.3842                 2.3421 12.5463      27.0421    0.9621          0.9738
+           mean age year 2 1230293       27.7679                 2.4307 11.4238      25.3372    0.9572          0.9642
+       share female year 1 1053455        0.0147                 0.0022  6.6654       0.0125    0.9030          0.9028
+       share female year 2 1074289        0.0147                 0.0023  6.4753       0.0124    0.8979          0.8989
+    share non-White year 1  805445        0.0310                 0.0010 31.9233       0.0300    0.9824          1.0000
+    share non-White year 2  811509        0.0289                 0.0010 29.9288       0.0279    0.9809          1.0000
+share dual-eligible year 1  858442        0.0361                 0.0013 27.4506       0.0348    0.9796          1.0000
+share dual-eligible year 2  851647        0.0360                 0.0013 26.7640       0.0347    0.9791          1.0000
+    mean risk score year 1 1198754        0.6172                    NaN     NaN          NaN       NaN             NaN
+    mean risk score year 2 1230293        0.5960                    NaN     NaN          NaN       NaN             NaN
+
+Reliability R_i by panel-size band (same sigma2_true for the whole file)
+          attribute   year   band  providers  median_R  share_R_ge_0_7
+           mean age year 1  11-20      90811     0.715           0.654
+           mean age year 1  21-50     173242     0.850           1.000
+           mean age year 1 51-100     191059     0.924           1.000
+           mean age year 1  101-+     743642     0.979           1.000
+           mean age year 2  11-20      97725     0.701           0.549
+           mean age year 2  21-50     184892     0.842           1.000
+           mean age year 2 51-100     204131     0.919           1.000
+           mean age year 2  101-+     743545     0.976           1.000
+       share female year 1  11-20       6897     0.433           0.000
+       share female year 1  21-50     118518     0.659           0.194
+       share female year 1 51-100     188260     0.788           1.000
+       share female year 1  101-+     739780     0.934           1.000
+       share female year 2  11-20       6951     0.432           0.000
+       share female year 2  21-50     126440     0.659           0.196
+       share female year 2 51-100     201312     0.788           1.000
+       share female year 2  101-+     739586     0.930           1.000
+    share non-White year 1  11-20      14557     0.761           1.000
+    share non-White year 1  21-50      39460     0.894           1.000
+    share non-White year 1 51-100      92508     0.946           1.000
+    share non-White year 1  101-+     658920     0.986           1.000
+    share non-White year 2  11-20      15359     0.755           1.000
+    share non-White year 2  21-50      41443     0.891           1.000
+    share non-White year 2 51-100      98049     0.944           1.000
+    share non-White year 2  101-+     656658     0.985           1.000
+share dual-eligible year 1  11-20      16923     0.750           1.000
+share dual-eligible year 1  21-50      55224     0.888           1.000
+share dual-eligible year 1 51-100     115028     0.942           1.000
+share dual-eligible year 1  101-+     671267     0.984           1.000
+share dual-eligible year 2  11-20      18750     0.755           1.000
+share dual-eligible year 2  21-50      58281     0.890           1.000
+share dual-eligible year 2 51-100     118825     0.943           1.000
+share dual-eligible year 2  101-+     655791     0.984           1.000
+
+Year-to-year correlation of the provider value, by minimum panel size across the two years
+          attribute   all  n 11-20  n 21-50  n 51-100  n 101-+
+           mean age 0.910    0.882    0.898     0.904    0.920
+       share female 0.891    0.826    0.843     0.840    0.915
+    share non-White 0.858    0.980    0.480     0.702    0.903
+share dual-eligible 0.936    0.951    0.871     0.877    0.948
+    mean risk score 0.908    0.781    0.860     0.905    0.954
