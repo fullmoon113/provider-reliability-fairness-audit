@@ -197,7 +197,11 @@ print(pf.groupby('vol_q')['Fraud'].agg(['count', 'sum', 'mean']).round(4))
 print("\n" + "=" * 70)
 print("Supplementary: Fairlearn Mitigation (secondary result)")
 print("=" * 70)
-oof_mit = np.zeros(len(pf))
+# ExponentiatedGradient.predict() draws from a randomised classifier, so one draw is one sample from a
+# distribution. The fit is deterministic given the data; we draw R predictions per fold (fixed seeds) and report
+# the mean and SD over draws.
+R = 30
+oof_mit = np.zeros((R, len(pf)))
 for f in range(5):
     tr, va = folds != f, folds == f
     sc = StandardScaler()
@@ -209,13 +213,38 @@ for f in range(5):
     mit = ExponentiatedGradient(estimator=base, constraints=EqualizedOdds(),
                                 eps=0.02, max_iter=30)
     mit.fit(Xb, yb, sensitive_features=sb)
-    oof_mit[va] = mit.predict(Xva)
+    for r in range(R):
+        oof_mit[r, va] = mit.predict(Xva, random_state=r)
 
-for lab, pred in [("Before mitigation", oof), ("After mitigation", oof_mit)]:
-    eod = equalized_odds_difference(y, pred, sensitive_features=sens)
-    dpd = demographic_parity_difference(y, pred, sensitive_features=sens)
-    print(f"[{lab}] F1={f1_score(y,pred):.3f}, EOD={eod:.4f}, DPD={dpd:.4f}, "
-          f"mid recall={recall_score(y[sens==0],pred[sens==0]):.3f}, "
-          f"extreme recall={recall_score(y[sens==1],pred[sens==1]):.3f}")
+def _metrics(pred):
+    return (f1_score(y, pred), equalized_odds_difference(y, pred, sensitive_features=sens),
+            demographic_parity_difference(y, pred, sensitive_features=sens),
+            recall_score(y[sens == 0], pred[sens == 0]), recall_score(y[sens == 1], pred[sens == 1]))
+
+names = ["F1", "EOD", "DPD", "mid recall", "extreme recall"]
+b0 = _metrics(oof)
+print("[Before mitigation] " + ", ".join(f"{n}={v:.4f}" for n, v in zip(names, b0)))
+M = np.array([_metrics(oof_mit[r]) for r in range(R)])
+print(f"[After mitigation, mean (SD) over {R} prediction draws] " +
+      ", ".join(f"{n}={m:.4f} ({sd:.4f})" for n, m, sd in zip(names, M.mean(0), M.std(0, ddof=1))))
+
+print(f"EOD after < EOD before in {int((M[:, 1] < b0[1]).sum())} of {R} draws")
+
+def _eod(pred, yy, ss):
+    g = []
+    for lab in (1, 0):  # TPR gap, FPR gap
+        m = yy == lab
+        g.append(abs(pred[m & (ss == 0)].mean() - pred[m & (ss == 1)].mean()))
+    return max(g)
+
+rng = np.random.default_rng(20261014)
+red = []
+for _ in range(1000):
+    i = rng.integers(0, len(y), len(y))
+    before = _eod(oof[i], y[i], sens[i])
+    after = np.mean([_eod(oof_mit[r][i], y[i], sens[i]) for r in range(0, R, 3)])
+    red.append(before - after)
+lo, hi = np.percentile(red, [2.5, 97.5])
+print(f"Bootstrap (1000) reduction in EOD, mean over prediction draws: {np.mean(red):.4f} 95% CI [{lo:.4f}, {hi:.4f}]")
 
 print("\n완료. Table1, Table2 CSV 저장됨.")
