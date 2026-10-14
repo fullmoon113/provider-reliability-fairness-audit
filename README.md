@@ -24,9 +24,9 @@ Results go to `output/`. All runs use fixed seeds (42 unless stated).
 The derived feature table `data/provider_features_FINAL.csv` is included, so every analysis runs without any download:
 
 ```bash
-python src/02_experiments.py        # Tables 1-2, specificity, seeds, Fairlearn (about 2 minutes)
+python src/02_experiments.py        # Tables 1 and 3, specificity, seeds, Fairlearn (about 2 minutes)
 python src/reliability_decomposition.py
-python src/make_null_sim_csv.py && python src/simfig.py   # Figs. 4-5
+python src/make_null_sim_csv.py && python src/simfig.py   # Figs. 5-6
 ```
 To rebuild the feature table from the raw Kaggle files, put the four `Train_*` CSV files in `data/raw/` and run
 `python src/01_build_features.py` (see `data/DATA.md`).
@@ -36,24 +36,25 @@ To rebuild the feature table from the raw Kaggle files, put the four `Train_*` C
 | Script | Reproduces |
 |---|---|
 | `src/01_build_features.py` | Kaggle raw CSVs -> `data/provider_features_FINAL.csv` (feature table, 5-fold split, partition labels) |
-| `src/02_experiments.py` | Main tables: unadjusted and panel-size-adjusted odds ratios, specificity test, multi-seed runs, Fairlearn |
+| `src/02_experiments.py` | Main tables: model performance (Table 1), unadjusted and panel-size-adjusted odds ratios (Table 3), specificity test, multi-seed runs, Fairlearn |
 | `src/reliability_decomposition.py` | Stage 0: variance decomposition (20.75 = 20.50 + 0.247), per-provider reliability, Table 2 |
 | `src/prespecified_partitions.py` | Partition-independent checks: continuous age, each age tail separately, pooled Q1+Q4 (class-weighted model) |
 | `src/cms_coupling_check.py` | Sampling-induced vs substantive coupling of mean patient age and panel size in CMS 2021-2022 |
+| `src/leie_cms_check.py` | LEIE-labelled check on the CMS 2021-22 panel (supplementary): needs the public LEIE file `UPDATED.csv` from oig.hhs.gov, passed as the first argument |
 | `src/noisy_attribute_comparison.py` | Comparison with noise-tolerant fairness methods on the null simulation (conditional-independence check, noise-corrected gap, equalized-odds post-processing); `SD_TRUE=1.77` / `3.56` and `SIM_REPS` select regime and replicates (Table 10) |
 | `src/table_s1_or.py` | Odds ratios across five random seeds (Table S1) |
 | `src/table4_firth.py`, `src/firth.py`, `src/firth_validate.py` | Seven alternative covariates; Firth penalized-likelihood fits; Holm correction (Table 4). `firth.py` is our own implementation of Firth's logistic regression |
 | `src/base_stability.py` | Unadjusted OR across resampling strategies and seeds |
 | `src/pipeline_sensitivity.py` | Sensitivity of the shrunken-attribute result to feature set, resampling and sigma^2_true |
-| `src/refit_sweep.py` | Shrunken attribute with the model refitted on the same partition (Table 8 logic: the partition used to resample is the one the disparity is evaluated on) |
+| `src/refit_sweep.py` | Shrunken attribute with the model refitted on the same partition (Table 9 logic: the partition used to resample is the one the disparity is evaluated on) |
 | `src/fpr_class_weighting.py` | Class weighting; false-positive-rate side of equalized odds; shrunken rows (Tables 8, 9) |
 | `src/pooled_smote_no_resampling.py` | Pooled SMOTE and no-resampling comparators |
 | `src/fpr_by_strategy.py` | Flag rates among fraud / non-fraud providers by group and strategy |
 | `src/null_sim.py`, `src/sim5k.py` | Null simulation (true age effect is zero by construction; 5,000 replicates, seed 20260910) and the CMS-calibrated regimes. `SIM_REPS=50 python src/sim5k.py` gives a quick smoke test |
 | `src/make_figures_1_2.py` | Fig. 1 (causal graph) and Fig. 2 (detection rate and panel size by age quartile) |
 | `src/make_figure_specificity.py` | Fig. 3 (p-values by control variable) |
-| `src/make_null_sim_csv.py`, `src/simfig.py` | Fig. 4 (null-simulation distribution, 5,000 replicates) and Fig. 5 (false-positive rate against the true between-provider SD; the plotted rates are those printed by `sim5k.py`) |
-| `src/make_figure_cms.py` | Fig. 6 (CMS replication, reads `data/cms_*.csv.gz`) |
+| `src/make_null_sim_csv.py`, `src/simfig.py` | Fig. 5 (null-simulation distribution, 5,000 replicates) and Fig. 6 (false-positive rate against the true between-provider SD; the plotted rates are those printed by `sim5k.py`) |
+| `src/make_figure_cms.py` | Fig. 4 (CMS replication, reads `data/cms_*.csv.gz`) |
 
 Scripts `refit_sweep.py`, `fpr_class_weighting.py`, `pooled_smote_no_resampling.py`, `fpr_by_strategy.py` and
 `make_figures_1_2.py` (and `prespecified_partitions.py`) load one another by file name; keep them together in `src/`.
@@ -64,12 +65,15 @@ See [`data/DATA.md`](data/DATA.md). Everything is public and needs no data use a
 like synthetic data (random beneficiary-provider linkage), which the paper discloses; the real-data evidence comes from the
 CMS Medicare "by Provider" public use files.
 
-## Known reproducibility caveat
+## Randomised mitigation (Fairlearn)
 
-The exponentiated-gradient (equalized-odds) mitigation at the end of `02_experiments.py` depends on the installed Fairlearn
-version. The paper reports F1 0.462 and an equalized-odds difference of 0.0263; Fairlearn 0.15 gives F1 0.456 and 0.0275
-(0.12 and 0.13 give F1 0.442 and 0.0244 and 0.0237). The qualitative result is the same in every version: the difference falls to about
-0.02-0.03 and F1 falls by 0.06-0.08, with the loss on mid-range providers. Everything else in `02_experiments.py` matches the paper exactly.
+`ExponentiatedGradient.predict()` returns a draw from a randomised classifier, so one call is one sample. The script therefore
+fits once per fold and draws 30 predictions per fold with fixed seeds (`random_state=r`), and prints the mean and SD over draws and a
+bootstrap interval for the reduction in the equalized-odds difference. With Fairlearn 0.15 and scikit-learn 1.8 it prints
+F1 0.4496 (SD 0.0040), equalized-odds difference 0.0282 (0.0053), mid-range recall 0.822, extreme-age recall 0.837, and the
+difference falls in 30 of 30 draws (these are the values in the paper). Single draws under Fairlearn 0.12-0.14 give F1 0.442-0.454
+and 0.026-0.031. Fairlearn 0.9 and 0.11 do not run with scikit-learn 1.8 (`force_all_finite` removed). Everything else in
+`02_experiments.py` matches the paper exactly.
 
 ## Numerical sensitivity
 
