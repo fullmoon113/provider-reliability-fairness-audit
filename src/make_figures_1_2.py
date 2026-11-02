@@ -30,7 +30,7 @@ plt.tight_layout(); plt.savefig(str(OUT/'Fig2_confounding.png'),bbox_inches='tig
 
 # ---- DAG ----
 plt.rcParams.update({'font.size':13})
-fig,ax=plt.subplots(figsize=(11.5,6.8)); ax.set_xlim(0,11.5); ax.set_ylim(-0.3,7.2); ax.axis('off')
+fig,ax=plt.subplots(figsize=(11.5,6.8)); ax.set_xlim(-0.9,11.5); ax.set_ylim(-0.6,7.2); ax.axis('off')
 NODE={'Astar':(1.5,5.0),'V':(5.6,5.0),'Y':(9.6,5.0),'A':(1.5,2.7),'L':(9.6,2.7),'D':(5.6,0.85)}
 LBL={'Astar':'A*','V':'V','Y':'Y','A':'A','L':'L','D':'D'}
 SUB={'Astar':'true patient\nage mix','V':'panel size','Y':'true fraud','A':'measured\nage mix','L':'fraud label\n(analysis conditions on $L=1$)','D':'detected'}
@@ -42,15 +42,17 @@ for k,(x,y0) in NODE.items():
     ax.text(x,y0,LBL[k],ha='center',va='center',fontsize=20,fontweight='bold',style='italic',color=FG.get(k,'black'),zorder=4)
     if k in ABOVE: ax.text(x,y0+0.72,SUB[k],ha='center',va='bottom',fontsize=11.5,color='#333',zorder=4)
     else: ax.text(x,y0-(.92 if k=='L' else .88),SUB[k],ha='center',va='top',fontsize=11.5,color='#333',zorder=4)
-def arrow(a,b,color='black',ls='-',lw=1.9):
+def arrow(a,b,color='black',ls='-',lw=1.9,rad=0.0,style='-|>'):
     x1,y1=NODE[a]; x2,y2=NODE[b]
-    ax.add_patch(FancyArrowPatch((x1,y1),(x2,y2),arrowstyle='-|>',mutation_scale=19,lw=lw,color=color,linestyle=ls,shrinkA=32,shrinkB=32,zorder=2))
+    ax.add_patch(FancyArrowPatch((x1,y1),(x2,y2),arrowstyle=style,mutation_scale=19,lw=lw,color=color,linestyle=ls,shrinkA=32,shrinkB=32,zorder=2,connectionstyle='arc3,rad=%s'%rad))
 arrow('Astar','A'); arrow('V','A',color='#c44e52',lw=2.6); arrow('V','D',color='#c44e52',lw=2.6)
-arrow('V','L',color='#8c8c8c',ls=(0,(5,3))); arrow('Y','L'); arrow('A','D',color='#1f3864',ls=(0,(4,3)),lw=2.2)
+arrow('V','L',color='#8c8c8c',ls=(0,(5,3))); arrow('Y','L'); from matplotlib.path import Path as MPath
+ax.add_patch(FancyArrowPatch(path=MPath([(1.1,4.55),(-1.3,3.2),(-0.6,0.5),(5.05,0.7)],[MPath.MOVETO,MPath.CURVE4,MPath.CURVE4,MPath.CURVE4]),arrowstyle='-|>',mutation_scale=19,lw=2.4,color='#1f3864',linestyle=(0,(4,3)),zorder=2)); arrow('A','D',color='#8c8c8c',ls=(0,(1,3)),lw=1.6,style='-')
 bb=dict(fc='white',ec='none',pad=2.5)
 ax.text(4.1,2.8,'measurement precision\n'+r'Var$(A \mid A^*, V) = \sigma_w^2 / V$',ha='center',va='center',fontsize=11.5,color='#c44e52',fontweight='bold',bbox=bb,zorder=5)
 ax.text(6.05,2.95,'behavioural\nsignal',ha='left',fontsize=11.5,color='#c44e52',fontweight='bold',bbox=bb,zorder=5)
 ax.text(7.85,4.30,'investigation\nintensity ?',ha='center',fontsize=11,color='#666',style='italic',bbox=bb,zorder=5)
-ax.text(3.45,1.55,'effect under test',ha='center',va='center',fontsize=11.5,color='#1f3864',fontweight='bold',rotation=-27,bbox=bb,zorder=5)
+ax.text(3.0,-0.05,r'effect under test'+'\n'+r'$A^* \rightarrow D$',ha='center',va='center',fontsize=11.5,color='#1f3864',fontweight='bold',bbox=bb,zorder=5)
+ax.text(3.75,1.75,'association the audit\nmeasures ($D$ on $A$)',ha='center',va='center',fontsize=10.5,color='#666',rotation=-27,bbox=bb,zorder=5)
 ax.text(5.75,6.85,r'Backdoor path  $A \leftarrow V \rightarrow D$  is open unless $V$ is adjusted for',ha='center',fontsize=13.5,color='#c44e52',fontweight='bold')
-plt.tight_layout(); plt.savefig(str(OUT/'Fig1_dag.png'),bbox_inches='tight'); plt.close()
+plt.tight_layout(); plt.savefig(str(OUT/'Fig1_dag.png'),bbox_inches='tight',dpi=300); plt.close()
