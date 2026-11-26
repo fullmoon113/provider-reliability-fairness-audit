@@ -11,7 +11,7 @@ procedure-code level and has no beneficiary demographics.
 
 The Kaggle file's beneficiary-to-provider linkage is close to random (observed/expected variance ratio of mean patient
 age = 1.012; for CMS it is far larger), so it should be treated as synthetic or semi-synthetic (see paper, Section III-A).
-CMS files are public use files released by the Centers for Medicare & Medicaid Services.
+CMS files are public use files released by the Centers for Medicare & Medicaid Services (U.S. government data, no data use agreement). The two merged year-pair panels here contain only provider-level aggregates derived from those files and are redistributed under that release; the original CMS files are not included.
 
 ## Raw Kaggle files (not redistributed here)
 
