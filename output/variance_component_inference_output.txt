@@ -1,0 +1,8 @@
+REML: tau^2 = 0.812  (tau = 0.901)  LR vs 0 = 465.806  boundary LRT p = 0.000  profile 95% interval [0.689, 0.948]  (boundary-adjusted 95%: [0.708, 0.925])
+ML  : tau^2 = 0.811  (tau = 0.901)  LR vs 0 = 465.146  boundary LRT p = 0.000  profile 95% interval [0.689, 0.947]  (boundary-adjusted 95%: [0.708, 0.924])
+Cochran Q = 7206.5 on 5409 df, p = 0.000;  Q/(k-1) = 1.3323  (observed/expected variance ratio)
+DerSimonian-Laird tau^2 = 0.802
+tau^2 = 0.812: median R = 0.111, share R<0.7 = 97.9%, providers with R>=0.7 = 115
+tau^2 = 0.948: median R = 0.128, share R<0.7 = 97.3%, providers with R>=0.7 = 144
+sigma_w x 0.98: Q = 7503.7, p = 0.000
+sigma_w x 1.02: Q = 6926.7, p = 0.000

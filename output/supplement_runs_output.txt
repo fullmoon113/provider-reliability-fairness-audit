@@ -1,0 +1,41 @@
+== S1: strategies (extreme age-mix; unadj | adj)
+class_weight  seed    42 det 0.858 | 0.477 [0.282,0.805] p=0.0055 | 1.018 [0.566,1.832] p=0.9521 | panel size p=1.2e-11
+group_smote   seed    42 det 0.881 | 0.462 [0.264,0.809] p=0.0070 | 0.823 [0.447,1.516] p=0.5325 | panel size p=6.7e-07
+group_smote   seed     1 det 0.875 | 0.466 [0.269,0.809] p=0.0066 | 0.835 [0.458,1.521] p=0.5554 | panel size p=3.5e-07
+group_smote   seed     7 det 0.879 | 0.439 [0.252,0.765] p=0.0037 | 0.776 [0.424,1.419] p=0.4104 | panel size p=7.7e-07
+group_smote   seed    99 det 0.874 | 0.519 [0.299,0.901] p=0.0199 | 0.811 [0.447,1.472] p=0.4903 | panel size p=0.0001
+group_smote   seed  2024 det 0.875 | 0.466 [0.269,0.809] p=0.0066 | 0.807 [0.444,1.468] p=0.4830 | panel size p=1.6e-06
+pooled_smote  seed    42 det 0.856 | 0.456 [0.271,0.766] p=0.0030 | 0.993 [0.553,1.783] p=0.9817 | panel size p=2.6e-12
+none          seed    42 det 0.397 | 0.291 [0.181,0.469] p=0.0000 | 0.941 [0.529,1.672] p=0.8354 | panel size p=9.7e-25
+
+== S4: bootstrap of recall gap (class weighting), 3000 resamples
+recall gap (mid - extreme) 0.100, 95% CI [0.028, 0.181]
+
+== S5: OLS on predicted probability / percentile rank (class weighting)
+probability: unadj -0.1344 p=2.5e-08 | adj -0.0160 p=0.4535
+percentile rank: unadj -0.1765 p=1.1e-09 | adj -0.0113 p=0.6293
+
+== S8: functional form of panel size (adjusted OR, extreme age-mix)
+None (unadjusted)                0.477 [0.282,0.805] p=0.0055
+log(1 + n), primary              1.018 [0.566,1.832] p=0.9521
+n (raw)                          0.919 [0.528,1.602] p=0.7670
+sqrt n                           1.003 [0.568,1.772] p=0.9908
+Quadratic in log(1 + n)          1.030 [0.576,1.839] p=0.9214
+Natural cubic spline, df = 4     1.022 [0.572,1.827] p=0.9416
+Decile indicators (9)            0.984 [0.543,1.783] p=0.9569
+1 / n                            0.614 [0.353,1.068] p=0.0840
+
+== S10 Panel A: ML vs Firth, three partitions
+Extreme age-mix            n=129 | ML unadj 0.477 (0.0055) Firth 0.475 (0.0061) | ML adj 1.018 (0.9521) Firth 1.010 (0.9736)
+High-elderly (top 25%)     n=56 | ML unadj 0.444 (0.0166) Firth 0.437 (0.0186) | ML adj 0.807 (0.5678) Firth 0.793 (0.5354)
+High-minority (top 25%)    n=103 | ML unadj 1.187 (0.6010) Firth 1.158 (0.6472) | ML adj 1.464 (0.2852) Firth 1.424 (0.3036)
+
+== S11: selection-strength sensitivity (weights exp(-gamma z)), adjusted extreme age-mix effect
+gamma 0.00: adj OR 1.018 p=0.9526
+gamma 0.25: adj OR 1.036 p=0.9087
+gamma 0.50: adj OR 1.064 p=0.8523
+gamma 1.00: adj OR 1.139 p=0.7544
+gamma 1.50: adj OR 1.199 p=0.7443
+gamma 2.00: adj OR 1.192 p=0.8151
+E-value, extreme (adj OR 1.018): point 1.05
+E-value, top quartile (adj OR 0.807): point 1.21

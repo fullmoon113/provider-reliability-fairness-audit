@@ -1,0 +1,71 @@
+Expected null odds ratio of an outer-quartile audit (Proposition 1) and expected significant-disparity rate
+group                                           n  med n sigma_w   tau samp.share  med R | OR@0.25 OR@0.5 OR@0.901 OR@1.213
+All providers (pooled)                    1105159    162   12.52  4.85       7.9%  0.960 |  0.995  0.990  0.981  0.974
+Certified Registered Nurse Anesthetist (CRNA)    46226    117   12.10  1.65      40.1%  0.686 |  0.975  0.950  0.913  0.889
+Anesthesiology                              37285    165   11.88  2.11      23.7%  0.839 |  0.988  0.976  0.955  0.940
+Emergency Medicine                          44042    283   17.06  3.07      18.0%  0.902 |  0.993  0.986  0.974  0.965
+Physician Assistant                         84062    127   15.09  4.13      16.0%  0.905 |  0.991  0.982  0.965  0.954
+Family Practice                             77522    176   11.77  3.67      10.2%  0.945 |  0.995  0.990  0.981  0.974
+Physical Therapist in Private Practice      57093     62    9.47  3.26      15.5%  0.880 |  0.991  0.981  0.965  0.954
+Internal Medicine                           84859    218   12.79  3.73       9.7%  0.949 |  0.996  0.991  0.983  0.977
+Nurse Practitioner                         143616    116   15.86  6.22       9.1%  0.947 |  0.995  0.990  0.980  0.973
+
+Expected significant-disparity rate (%) of the unadjusted audit under the null, nominal 5%, by number of fraud-labelled audited providers m
+
+-- detection slope gamma1 = 0.25 per SD of log panel size
+m                                              500     2000    10000   100000
+group                                                                        
+All providers (pooled)                            5.0     5.0     5.1     5.7
+Certified Registered Nurse Anesthetist (CRNA)     5.1     5.4     6.9    25.3
+Anesthesiology                                    5.0     5.1     5.4     9.3
+Emergency Medicine                                5.0     5.0     5.1     6.3
+Physician Assistant                               5.0     5.0     5.2     7.3
+Family Practice                                   5.0     5.0     5.1     5.7
+Physical Therapist in Private Practice            5.0     5.0     5.2     7.5
+Internal Medicine                                 5.0     5.0     5.1     5.6
+Nurse Practitioner                                5.0     5.0     5.1     5.7
+
+-- detection slope gamma1 = 0.5 per SD of log panel size
+m                                              500     2000    10000   100000
+group                                                                        
+All providers (pooled)                            5.0     5.1     5.3     8.2
+Certified Registered Nurse Anesthetist (CRNA)     5.4     6.6    13.1    74.4
+Anesthesiology                                    5.1     5.4     6.9    24.6
+Emergency Medicine                                5.0     5.1     5.6    11.1
+Physician Assistant                               5.1     5.2     6.0    15.7
+Family Practice                                   5.0     5.1     5.3     8.2
+Physical Therapist in Private Practice            5.1     5.2     6.1    16.5
+Internal Medicine                                 5.0     5.1     5.3     7.6
+Nurse Practitioner                                5.0     5.1     5.3     8.3
+
+-- detection slope gamma1 = 0.901 per SD of log panel size
+m                                              500     2000    10000   100000
+group                                                                        
+All providers (pooled)                            5.1     5.2     6.1    16.9
+Certified Registered Nurse Anesthetist (CRNA)     6.3    10.1    31.3    99.7
+Anesthesiology                                    5.3     6.3    11.6    65.8
+Emergency Medicine                                5.1     5.4     7.2    27.6
+Physician Assistant                               5.2     5.8     8.8    44.1
+Family Practice                                   5.1     5.2     6.2    17.1
+Physical Therapist in Private Practice            5.2     5.8     8.9    44.4
+Internal Medicine                                 5.0     5.2     5.9    14.6
+Nurse Practitioner                                5.1     5.2     6.2    17.6
+
+-- detection slope gamma1 = 1.213 per SD of log panel size
+m                                              500     2000    10000   100000
+group                                                                        
+All providers (pooled)                            5.1     5.4     7.1    26.6
+Certified Registered Nurse Anesthetist (CRNA)     7.1    13.7    48.3   100.0
+Anesthesiology                                    5.6     7.3    17.0    88.5
+Emergency Medicine                                5.2     5.8     9.0    45.3
+Physician Assistant                               5.3     6.4    12.1    68.6
+Family Practice                                   5.1     5.4     7.1    27.1
+Physical Therapist in Private Practice            5.3     6.3    11.9    67.6
+Internal Medicine                                 5.1     5.3     6.7    22.6
+Nurse Practitioner                                5.1     5.4     7.2    28.3
+
+Monte Carlo check of the asymptotic rate (400 reps; gamma1 = 1.213)
+  All providers (pooled)               m=  500: Monte Carlo   5.2% (median OR 0.975)   analytic   5.1%
+  All providers (pooled)               m= 2000: Monte Carlo   4.5% (median OR 0.989)   analytic   5.4%
+  Internal Medicine                    m=  500: Monte Carlo   4.5% (median OR 0.964)   analytic   5.1%
+  Internal Medicine                    m= 2000: Monte Carlo   6.5% (median OR 0.978)   analytic   5.3%

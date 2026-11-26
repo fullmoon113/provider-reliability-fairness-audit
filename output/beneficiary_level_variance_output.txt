@@ -1,0 +1,3 @@
+providers 5410, provider-beneficiary pairs 363300; within-provider SD 12.8955
+one-way ANOVA: F(5409, 357890) = 1.2978, p = 3.68e-45; ANOVA tau^2 = 0.738; ICC = 0.00442
+cluster bootstrap over providers (1000): REML tau^2 median 0.810, 95% percentile interval [0.685, 0.945]; share <= 0: 0.0%

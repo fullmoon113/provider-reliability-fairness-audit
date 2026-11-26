@@ -1,0 +1,60 @@
+== Quartile detection (fraud-labelled)
+Q1: n_fraud=73 det=0.808 median panel (fraud) 59; median panel (all) 15
+Q2: n_fraud=180 det=0.872 median panel (fraud) 129; median panel (all) 44
+Q3: n_fraud=197 det=0.893 median panel (fraud) 203; median panel (all) 50
+Q4: n_fraud=56 det=0.750 median panel (fraud) 61; median panel (all) 12
+Q1 vs Q4 diff 0.05821917808219179 Fisher p 0.5191014902037543
+  95% CI -0.08676141128597997 0.20319976745036356
+median panel size, fraud-labelled: middle quartiles pooled 152.0  outer 60.0
+all providers: ext median 13.0 mid 47.0
+t on log panel size -36.40382936614786 1.003433553329071e-259
+
+== Firth / penalized LRT, row 1
+unadj: Firth OR 0.475, penalized LRT p 0.0061
+adj: Firth OR 1.010, penalized LRT p 0.9736
+ML: unadj 0.477  adj 1.018 [0.566,1.832] p 0.9521
+SE adj (log OR) 0.2996124439135969  80% power OR 0.43217925141939667
+TOST p (0.8-1.25) 0.24675614426374087
+panel size p in adjusted model 1.16595893323229e-11
+
+== Restriction to larger providers
+>0: n=506 OR 0.477 p=0.0055
+>10: n=488 OR 0.468 p=0.0075
+>20: n=458 OR 0.632 p=0.1668
+>30: n=432 OR 0.612 p=0.1792
+>50: n=385 OR 0.689 p=0.4130
+>100: n=281 OR 0.559 p=0.3262
+
+== Partitions and Holm (six): extreme, top quartile, minority, continuous age, lowest quartile, highest quartile
+extreme                  unadj 0.477 [0.282,0.805] p=0.0055 | adj 1.018 [0.566,1.832] p=0.9521
+top                      unadj 0.444 [0.228,0.863] p=0.0166 | adj 0.807 [0.387,1.682] p=0.5678
+minority                 unadj 1.187 [0.624,2.260] p=0.6010 | adj 1.464 [0.728,2.946] p=0.2852
+continuous               unadj 0.716 [0.417,1.228] p=0.2247 | adj 0.779 [0.464,1.309] p=0.3456
+lowest Q vs mid half     unadj 0.557 [0.287,1.080] p=0.0831 | adj 1.249 [0.599,2.603] p=0.5532
+highest Q vs mid half    unadj 0.396 [0.200,0.784] p=0.0078 | adj 0.830 [0.388,1.775] p=0.6301
+Holm (six, unadjusted p): {'extreme': np.float64(0.0332), 'top': np.float64(0.0665), 'minority': np.float64(0.601), 'continuous': np.float64(0.4494), 'lowest Q vs mid half': np.float64(0.2492), 'highest Q vs mid half': np.float64(0.039)}
+
+== Functional forms (adjusted OR of extreme-age)
+log1p              adj OR 1.018 p=0.9521
+raw                adj OR 0.919 p=0.7670
+sqrt               adj OR 1.003 p=0.9908
+inverse 1/n        adj OR 0.614 p=0.0840
+quadratic in log   adj OR 1.030 p=0.9214
+natural spline        adj OR 1.022 p=0.9416
+decile indicators     adj OR 0.984 p=0.9569
+
+== Stratified gap and Mantel-Haenszel
+quartiles: MH OR 0.949  stratum-weighted gap 0.002
+deciles: MH OR 0.984  stratum-weighted gap 0.020
+unstratified gap 0.10034338823432654
+
+== Thresholds (probability >= t)
+thr 0.3: det 0.951 unadj 0.348 p=0.0109 | adj 0.629 p=0.2962
+thr 0.4: det 0.921 unadj 0.428 p=0.0120 | adj 0.737 p=0.4013
+thr 0.5: det 0.858 unadj 0.477 p=0.0055 | adj 1.018 p=0.9521
+thr 0.6: det 0.787 unadj 0.440 p=0.0004 | adj 1.031 p=0.9091
+thr 0.7: det 0.694 unadj 0.424 p=0.0001 | adj 1.055 p=0.8327
+thr 0.8: det 0.595 unadj 0.379 p=0.0000 | adj 1.139 p=0.6213
+thr 0.9: det 0.468 unadj 0.292 p=0.0000 | adj 0.910 p=0.7375
+probability: unadj p=2.532e-08  adj p=0.4535
+percentile rank: unadj p=1.142e-09  adj p=0.6293

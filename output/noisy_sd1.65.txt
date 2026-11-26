@@ -1,0 +1,16 @@
+replicates used: 2000   (true age effect = 0 by construction; true between-provider SD = 1.65)
+
+mean flip rates of the extreme-age label: P(G^=1|G*=0) = 0.417,  P(G^=0|G*=1) = 0.417
+(1) conditional independence of G^ and detection given G*: rejected at 5% in 60.6% of replicates
+(2) recall gap, mid minus extreme (median [2.5%, 97.5%]):
+      true groups G*       -0.000 [-0.059, +0.060]
+      measured groups G^   +0.072 [+0.003, +0.140]   significant in 53.0%
+      noise-corrected      +0.427 [+0.019, +0.877]   (same z, so same rejection rate)
+(3) equalized-odds post-processing on G^:
+      measured-group gap   +0.072 -> +0.001
+      true-group gap       -0.000 -> -0.022
+      overall recall       0.859 -> 0.810
+      recall, small  providers (tercile 0): 0.449 -> 0.438
+      recall, middle providers (tercile 1): 0.713 -> 0.682
+      recall, large  providers (tercile 2): 0.915 -> 0.861
+      recall gap large minus small: +0.466 -> +0.424

@@ -1,0 +1,44 @@
+== Table 1 (class weighting)
+LR   F1 0.533+-0.022  P 0.386+-0.022  R 0.858+-0.016  ROC 0.932+-0.005  PR 0.652+-0.042
+RF   F1 0.605+-0.025  P 0.573+-0.024  R 0.642+-0.047  ROC 0.934+-0.006  PR 0.632+-0.036
+XGB  F1 0.585+-0.022  P 0.470+-0.022  R 0.777+-0.021  ROC 0.928+-0.003  PR 0.669+-0.040
+
+== Table 3 (LR, class weighting): partition, n, unadj OR [CI] p, adj OR [CI] p
+Extreme age-mix (Q1+Q4)    n= 129 unadj 0.477 [0.282,0.805] p=0.0055 | adj 1.018 [0.566,1.832] p=0.9521
+    detection rate group/rest: 0.783/0.883
+High-elderly (top 25%)     n=  56 unadj 0.444 [0.228,0.863] p=0.0166 | adj 0.807 [0.387,1.682] p=0.5678
+    detection rate group/rest: 0.750/0.871
+High-minority (top 25%)    n= 103 unadj 1.187 [0.624,2.260] p=0.6010 | adj 1.464 [0.728,2.946] p=0.2852
+    detection rate group/rest: 0.874/0.854
+
+== Table 6 (detection model; class weighting)
+LR   det 85.8% unadj 0.477 [0.282,0.805] p=0.0055 adj 1.018 [0.566,1.832] p=0.9521
+RF   det 64.2% unadj 0.457 [0.304,0.688] p=0.0002 adj 1.048 [0.651,1.687] p=0.8467
+XGB  det 77.7% unadj 0.390 [0.249,0.610] p=0.0000 adj 0.793 [0.479,1.311] p=0.3653
+
+== Table 4 (LR, class weighting): control, arm1 d, arm2 stdOR, age p, Holm p
+Panel size, log            d=-0.99  stdOR=3.02  p=0.9521  Holm=0.9521
+Mean length of stay        d=-0.15  stdOR=2.07  p=0.0004  Holm=0.0031
+Chronic conditions         d=+0.07  stdOR=1.22  p=0.0023  Holm=0.0163
+Claims per beneficiary     d=-0.21  stdOR=0.92  p=0.0043  Holm=0.0248
+Inpatient beneficiaries    d=-0.32  stdOR=2203.31  p=0.0115  Holm=0.0376
+Outpatient reimbursement   d=-0.04  stdOR=571.57  p=0.0094  Holm=0.0376
+Deceased ratio             d=-0.02  stdOR=1.05  p=0.0041  Holm=0.0248
+Female ratio               d=-0.00  stdOR=0.66  p=0.0096  Holm=0.0376
+Joint (7 alternatives): OR 0.477 [0.228,1.001] p=0.0503;  + panel size: OR 0.848 [0.283,2.542] p=0.7681
+
+== Flagging among 4904 negatives: rates 9.9%/18.8%  unadj 0.475 [0.402,0.561] p=1.459e-18  adj 1.015 [0.840,1.226] p=0.8793
+
+== Fairness metrics, class weighting
+EOD 0.1003  DPD 0.1532  F1 0.532  recall mid 0.883 extreme 0.783
+Mitigated (30 draws): EOD 0.0307 (SD 0.0147; falls in 30/30), F1 0.388, recall mid 0.781 extreme 0.763
+
+== Table 8 inputs: SD observed 4.55 -> shrunken 0.376; membership kept 62.3%
+extreme (shrunken) group: median panel 45 (was 13); share in top panel-size quartile 37.7% (was 9.9%); fraud prevalence 12.9% (was 4.8%)
+Row 2 (shrunken groups, same class-weighted model): unadj 2.262 [1.362,3.758] p=0.0016 | adj 1.127 [0.628,2.023] p=0.6880
+Row 3 (shrunken groups, model refitted with resampling stratified on them): unadj 1.447 [0.828,2.530] p=0.1944 | adj 0.807 [0.429,1.518] p=0.5067
+Row (pooled SMOTE): unadj 2.348 [1.417,3.889] p=0.0009 | adj 1.141 [0.636,2.046] p=0.6584
+  sigma2_true=0.247: fixed-model shrunken OR 2.685 p=0.0002
+  sigma2_true=0.812: fixed-model shrunken OR 2.262 p=0.0016
+  sigma2_true=0.948: fixed-model shrunken OR 2.092 p=0.0043
+  sigma2_true=1.970: fixed-model shrunken OR 1.686 p=0.0415

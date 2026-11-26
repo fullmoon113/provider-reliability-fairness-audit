@@ -1,0 +1,36 @@
+Analytic prediction from Proposition 1(i) (null: no age effect)
+  tau  partition                weights      gap      OR
+0.497      outer   fraud-labelled (506)  -0.1413   0.366
+0.497      outer          model-implied  -0.1393   0.369
+0.497        top   fraud-labelled (506)  -0.1222   0.440
+0.497        top          model-implied  -0.1206   0.442
+0.497     median   fraud-labelled (506)   0.0000   1.000
+0.497     median          model-implied   0.0000   1.000
+1.770      outer   fraud-labelled (506)  -0.0670   0.593
+1.770      outer          model-implied  -0.0655   0.598
+1.770        top   fraud-labelled (506)  -0.0537   0.669
+1.770        top          model-implied  -0.0525   0.672
+1.770     median   fraud-labelled (506)   0.0000   1.000
+1.770     median          model-implied   0.0000   1.000
+3.560      outer   fraud-labelled (506)  -0.0296   0.787
+3.560      outer          model-implied  -0.0289   0.790
+3.560        top   fraud-labelled (506)  -0.0220   0.840
+3.560        top          model-implied  -0.0215   0.842
+3.560     median   fraud-labelled (506)   0.0000   1.000
+3.560     median          model-implied   0.0000   1.000
+4.930      outer   fraud-labelled (506)  -0.0189   0.858
+4.930      outer          model-implied  -0.0184   0.860
+4.930        top   fraud-labelled (506)  -0.0136   0.897
+4.930        top          model-implied  -0.0133   0.898
+4.930     median   fraud-labelled (506)   0.0000   1.000
+4.930     median          model-implied  -0.0000   1.000
+
+Observed audits among the 506 fraud-labelled providers (unadjusted OR [95% CI] p | adjusted OR [95% CI] p)
+-- training strategy: group_smote (SMOTE stratified on the extreme-age partition)
+  outer quartiles (Q1+Q4)        0.462 [0.264,0.809] p=0.0070 | 0.823 [0.447,1.516] p=0.5325
+  top quartile (>= Q3)           0.386 [0.193,0.769] p=0.0068 | 0.615 [0.295,1.281] p=0.1941
+  median split (above median)    0.859 [0.501,1.475] p=0.5825 | 0.676 [0.383,1.194] p=0.1776
+-- training strategy: class_weight
+  outer quartiles (Q1+Q4)        0.477 [0.282,0.805] p=0.0055 | 1.018 [0.566,1.832] p=0.9521
+  top quartile (>= Q3)           0.444 [0.228,0.863] p=0.0166 | 0.807 [0.387,1.682] p=0.5678
+  median split (above median)    1.067 [0.648,1.757] p=0.7991 | 0.793 [0.459,1.368] p=0.4041
