@@ -16,4 +16,4 @@ eps   15%: outer: 0.92  top: 0.69  median: 0.80
 eps   10%: outer: 0.97  top: 0.86  median: 0.91
 eps    5%: outer: 1.00  top: 0.97  median: 0.98
 
-primary dataset (tau^2 = 0.812): expected misclassification, outer split: all providers 45.9%, fraud-labelled 39.2%;  top-quartile split 29.0%; share with R >= R*(10%) = 0.00%
+primary dataset (tau^2 = 0.812): expected misclassification, outer split: all providers 45.9%, fraud-labeled 39.2%;  top-quartile split 29.0%; share with R >= R*(10%) = 0.00%

@@ -1,31 +1,31 @@
 Analytic prediction from Proposition 1(i) (null: no age effect)
   tau  partition                weights      gap      OR
-0.901      outer   fraud-labelled (506)  -0.1145   0.431
+0.901      outer   fraud-labeled (506)  -0.1145   0.431
 0.901      outer          model-implied  -0.1124   0.435
-0.901        top   fraud-labelled (506)  -0.0969   0.508
+0.901        top   fraud-labeled (506)  -0.0969   0.508
 0.901        top          model-implied  -0.0952   0.511
-0.901     median   fraud-labelled (506)   0.0000   1.000
+0.901     median   fraud-labeled (506)   0.0000   1.000
 0.901     median          model-implied   0.0000   1.000
-1.650      outer   fraud-labelled (506)  -0.0718   0.573
+1.650      outer   fraud-labeled (506)  -0.0718   0.573
 1.650      outer          model-implied  -0.0702   0.578
-1.650        top   fraud-labelled (506)  -0.0579   0.650
+1.650        top   fraud-labeled (506)  -0.0579   0.650
 1.650        top          model-implied  -0.0567   0.654
-1.650     median   fraud-labelled (506)   0.0000   1.000
+1.650     median   fraud-labeled (506)   0.0000   1.000
 1.650     median          model-implied   0.0000   1.000
-3.470      outer   fraud-labelled (506)  -0.0306   0.781
+3.470      outer   fraud-labeled (506)  -0.0306   0.781
 3.470      outer          model-implied  -0.0299   0.784
-3.470        top   fraud-labelled (506)  -0.0228   0.835
+3.470        top   fraud-labeled (506)  -0.0228   0.835
 3.470        top          model-implied  -0.0223   0.837
-3.470     median   fraud-labelled (506)   0.0000   1.000
+3.470     median   fraud-labeled (506)   0.0000   1.000
 3.470     median          model-implied   0.0000   1.000
-4.850      outer   fraud-labelled (506)  -0.0193   0.855
+4.850      outer   fraud-labeled (506)  -0.0193   0.855
 4.850      outer          model-implied  -0.0189   0.857
-4.850        top   fraud-labelled (506)  -0.0140   0.894
+4.850        top   fraud-labeled (506)  -0.0140   0.894
 4.850        top          model-implied  -0.0137   0.896
-4.850     median   fraud-labelled (506)   0.0000   1.000
+4.850     median   fraud-labeled (506)   0.0000   1.000
 4.850     median          model-implied   0.0000   1.000
 
-Observed audits among the 506 fraud-labelled providers (unadjusted OR [95% CI] p | adjusted OR [95% CI] p)
+Observed audits among the 506 fraud-labeled providers (unadjusted OR [95% CI] p | adjusted OR [95% CI] p)
 -- training strategy: group_smote (SMOTE stratified on the extreme-age partition)
   outer quartiles (Q1+Q4)        0.462 [0.264,0.809] p=0.0070 | 0.823 [0.447,1.516] p=0.5325
   top quartile (>= Q3)           0.386 [0.193,0.769] p=0.0068 | 0.615 [0.295,1.281] p=0.1941

@@ -1,0 +1,23 @@
+Flag-rate table: median over the eight specialties of log odds ratios of being flagged (outer vs middle split); P1 / P2 = predicted (constant mean / mean trend)
+
+-- detector T1: flag rate 10.7% of audited providers
+               audits_failing      M  pred_P1  pred_P2  obs_unadj  obs_adj  obs_center  obs_mh  sig_unadj  sig_adj  holds
+attribute                                                                                                                
+age 65-74                   8  0.218    0.233    0.300      0.520    0.159      -0.392   0.067          8        7      0
+age 75-84                   8  0.240    0.285    0.317      0.889    0.298      -0.757   0.063          8        7      0
+dual-eligible               6  0.116    0.100    0.301     -0.664    0.048       1.480   0.030          8        4      0
+female                      8  0.277    0.343    0.356      0.676   -0.032      -0.630   0.060          7        5      0
+mean age                    8  0.196    0.167    0.303      0.615    0.017      -0.402  -0.020          8        2      0
+non-White                   1  0.072    0.045    0.148     -0.868    0.124       1.871  -0.047          8        5      0
+  failing audits: 39; significant unadjusted 38, after adjustment 23; criterion holds in 0; slope of observed on predicted (P1) log OR 2.92, correlation 0.44; (P2) slope 2.30, correlation 0.41
+
+-- detector T2: flag rate 10.6% of audited providers
+               audits_failing      M  pred_P1  pred_P2  obs_unadj  obs_adj  obs_center  obs_mh  sig_unadj  sig_adj  holds
+attribute                                                                                                                
+age 65-74                   8  0.218    0.139    0.167      0.442    0.159      -0.328   0.154          8        7      1
+age 75-84                   8  0.240    0.147    0.148      0.512    0.174      -0.378   0.138          8        8      0
+dual-eligible               6  0.116    0.058    0.122      0.020    0.190       0.743   0.229          8        7      0
+female                      8  0.277    0.185    0.188      0.329    0.187      -0.248   0.136          6        8      0
+mean age                    8  0.196    0.095    0.145      0.508    0.174      -0.189   0.158          8        8      0
+non-White                   1  0.072    0.025    0.030     -0.238    0.089       0.901   0.101          8        5      0
+  failing audits: 39; significant unadjusted 37, after adjustment 37; criterion holds in 1; slope of observed on predicted (P1) log OR 2.16, correlation 0.48; (P2) slope 2.13, correlation 0.58

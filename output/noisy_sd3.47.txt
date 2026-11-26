@@ -1,16 +1,20 @@
 replicates used: 2000   (true age effect = 0 by construction; true between-provider SD = 3.47)
 
 mean flip rates of the extreme-age label: P(G^=1|G*=0) = 0.316,  P(G^=0|G*=1) = 0.316
-(1) conditional independence of G^ and detection given G*: rejected at 5% in 24.0% of replicates
+(1) conditional independence of G^ and detection given G*: rejected at 5% in 23.7% of replicates
 (2) recall gap, mid minus extreme (median [2.5%, 97.5%]):
-      true groups G*       +0.000 [-0.062, +0.063]
-      measured groups G^   +0.029 [-0.033, +0.094]   significant in 15.3%
-      noise-corrected      +0.080 [-0.087, +0.261]   (same z, so same rejection rate)
-(3) equalized-odds post-processing on G^:
-      measured-group gap   +0.029 -> +0.000
-      true-group gap       +0.000 -> -0.017
-      overall recall       0.859 -> 0.838
-      recall, small  providers (tercile 0): 0.446 -> 0.439
-      recall, middle providers (tercile 1): 0.714 -> 0.698
-      recall, large  providers (tercile 2): 0.915 -> 0.893
-      recall gap large minus small: +0.469 -> +0.454
+      true groups G*       +0.001 [-0.057, +0.061]
+      measured groups G^   +0.030 [-0.031, +0.092]   significant in 14.1%
+      noise-corrected      +0.081 [-0.085, +0.253]   (same z, so same rejection rate)
+      true gap, mean +0.0004 (Monte Carlo SE 0.0007); mean divisor 1 - g0 - g1 = 0.368 (all providers), 0.587 (fraud-labeled)
+      flip rates among fraud-labeled providers: P(G^=1|G*=0) = 0.111, P(G^=0|G*=1) = 0.302; label-level error rate 0.207
+      correction with all-provider rates: +0.081; with fraud-labeled rates: +0.051 [-0.054, +0.159]
+      control, same flip rates independent of panel size: measured gap +0.002 (significant in 5.4%), corrected +0.005
+(3) equal-opportunity post-processing on G^:
+      measured-group gap   +0.030 -> -0.000
+      true-group gap       +0.001 -> -0.017
+      overall recall       0.860 -> 0.839
+      recall, small  providers (tercile 0): 0.447 -> 0.439
+      recall, middle providers (tercile 1): 0.716 -> 0.701
+      recall, large  providers (tercile 2): 0.916 -> 0.893
+      recall gap large minus small: +0.470 -> +0.454

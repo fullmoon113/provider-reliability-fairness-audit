@@ -1,0 +1,72 @@
+== Internal Medicine: non-White, outer vs middle, flag rate (T1)
+tau^2 = 0.08274; Q p = 0; median R = 0.990; M = 6.3% (eps 10%); eta_G = 0.013; eta_D = 0.532; r_hat = 50.7% (alpha_s 7.5%); branch = adjust; audit OR (size-adjusted) = 1.231 [1.159, 1.307]; unadjusted 3.183; center 5.306; Prop. 1 1.047; shrunken(adj.) 1.208; power at OR 0.70 = 100.0%, MDE = 0.906 -> attribute permitted: size-adjusted estimate reported with its companions
+  tau2: 0.08274436501921542
+  p_Q: 0.0
+  median_R: 0.9897041528376983
+  M: 0.06265795618027876
+  eta_G: 0.01321304749972953
+  eta_D: 0.5316781328932046
+  r_hat: 0.5074975176902
+  branch: adjust
+  predicted_OR: 1.0466086248120954
+  MDE: 0.9062695770238384
+  power_at_delta: 0.9999999999999999
+  decision: attribute permitted: size-adjusted estimate reported with its companions
+  unadjusted: OR 3.183 [3.027, 3.348]
+  adjusted: OR 1.231 [1.159, 1.307]
+  center: OR 5.306 [5.012, 5.617]
+  shrunken_adjusted: OR 1.208 [1.138, 1.283]
+== Internal Medicine: female, outer vs middle, flag rate (T1)
+tau^2 = 0.008415; Q p = 0; median R = 0.882; M = 20.1% (eps 10%); eta_G = 0.074; eta_D = 0.532; r_hat = 100.0% (alpha_s 7.5%); branch = adjust; audit OR (size-adjusted) = 0.712 [0.671, 0.756]; unadjusted 1.862; center 0.571; Prop. 1 1.286; shrunken(adj.) 1.429; power at OR 0.70 = 100.0%, MDE = 0.868 -> attribute permitted: size-adjusted estimate reported with its companions
+  tau2: 0.008414876471980519
+  p_Q: 0.0
+  median_R: 0.8817185630406644
+  M: 0.20106253390250228
+  eta_G: 0.07419081328787734
+  eta_D: 0.5316781328932046
+  r_hat: 1.0
+  branch: adjust
+  predicted_OR: 1.2861763367060461
+  MDE: 0.867553047517202
+  power_at_delta: 0.9999998043601368
+  decision: attribute permitted: size-adjusted estimate reported with its companions
+  unadjusted: OR 1.862 [1.776, 1.952]
+  adjusted: OR 0.712 [0.671, 0.756]
+  center: OR 0.571 [0.545, 0.597]
+  shrunken_adjusted: OR 1.429 [1.348, 1.516]
+== Internal Medicine: age 65-74, outer vs middle, flag rate (T1)
+tau^2 = 0.01167; Q p = 0; median R = 0.915; M = 17.3% (eps 10%); eta_G = 0.068; eta_D = 0.532; r_hat = 100.0% (alpha_s 7.5%); branch = adjust; audit OR (size-adjusted) = 2.115 [1.996, 2.241]; unadjusted 2.088; center 0.956; Prop. 1 1.255; shrunken(adj.) 3.099; power at OR 0.70 = 100.0%, MDE = 0.881 -> attribute permitted: size-adjusted estimate reported with its companions
+  tau2: 0.011666492429327976
+  p_Q: 0.0
+  median_R: 0.9154691678807962
+  M: 0.17274766514940687
+  eta_G: 0.0683840036633636
+  eta_D: 0.5316781328932046
+  r_hat: 0.9999999999999991
+  branch: adjust
+  predicted_OR: 1.2550473377915266
+  MDE: 0.8813743190501726
+  power_at_delta: 0.9999999986876745
+  decision: attribute permitted: size-adjusted estimate reported with its companions
+  unadjusted: OR 2.088 [1.992, 2.188]
+  adjusted: OR 2.115 [1.996, 2.241]
+  center: OR 0.956 [0.915, 1.000]
+  shrunken_adjusted: OR 3.099 [2.916, 3.294]
+== Internal Medicine: mean age, outer vs middle, flag rate (T1)
+tau^2 = 12.13; Q p = 0; median R = 0.942; M = 14.5% (eps 10%); eta_G = 0.046; eta_D = 0.532; r_hat = 100.0% (alpha_s 7.5%); branch = adjust; audit OR (size-adjusted) = 1.127 [1.065, 1.193]; unadjusted 2.085; center 0.554; Prop. 1 1.173; shrunken(adj.) 1.240; power at OR 0.70 = 100.0%, MDE = 0.892 -> attribute permitted: size-adjusted estimate reported with its companions
+  tau2: 12.126300761859786
+  p_Q: 0.0
+  median_R: 0.941754446252044
+  M: 0.14538507346524848
+  eta_G: 0.046470241025247105
+  eta_D: 0.5316781328932046
+  r_hat: 0.9999994071065413
+  branch: adjust
+  predicted_OR: 1.1729101127042716
+  MDE: 0.8917567175491059
+  power_at_delta: 0.9999999999932161
+  decision: attribute permitted: size-adjusted estimate reported with its companions
+  unadjusted: OR 2.085 [1.991, 2.184]
+  adjusted: OR 1.127 [1.065, 1.193]
+  center: OR 0.554 [0.529, 0.580]
+  shrunken_adjusted: OR 1.240 [1.174, 1.311]

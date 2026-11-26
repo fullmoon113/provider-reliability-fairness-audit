@@ -13,3 +13,4 @@ Stage 1-2 [age included in model] recall overall 0.276
 Size-detection slope of the top-10% rule among excluded providers: -0.252 per SD of log panel size [-0.474, -0.031], p=0.0255; recall 0.252
 Stage 3: adjusting for provider-type share instead: OR 1.159, p=0.581
 Stage 5: cut 2024-01-01: positives 365 (rerun with the date as 2nd argument)
+Prop. 1 prediction for the outer-quartile split among excluded providers: OR 1.014 (tau2 22.83)

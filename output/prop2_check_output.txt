@@ -1,0 +1,10 @@
+                                           estimate  median_OR    lo    hi  rejection  reps
+               posterior mean partition (known tau)      1.893 1.093 3.231      66.95  2000
+               posterior draw partition (known tau)      0.998 0.593 1.657       5.20  2000
+    posterior probability, no size term (known tau)      1.003 0.839 1.193       0.45  2000
+           posterior probability + size (known tau)      1.008 0.667 1.632       4.95  2000
+           posterior mean partition (estimated tau)      1.891 1.098 3.235      67.25  2000
+           posterior draw partition (estimated tau)      1.000 0.595 1.686       5.00  2000
+posterior probability, no size term (estimated tau)      1.004 0.842 1.184       0.30  2000
+       posterior probability + size (estimated tau)      1.008 0.665 1.632       4.90  2000
+                         observed partition (naive)      0.441 0.256 0.744      86.35  2000
