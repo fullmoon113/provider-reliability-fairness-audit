@@ -1,0 +1,15 @@
+providers 1,105,159; LEIE-positive after 2023-01-01: 416
+Stage 0: observed var 24.73, expected sampling var 1.90, ratio 13.04
+Stage 1-2 [age excluded from model] recall overall 0.252
+  outer quartiles    unadjusted       OR 1.163 [0.721, 1.874] p=0.536
+  outer quartiles    adj. panel size  OR 1.084 [0.668, 1.759] p=0.745
+  outer deciles      unadjusted       OR 0.734 [0.455, 1.185] p=0.206
+  outer deciles      adj. panel size  OR 0.636 [0.387, 1.046] p=0.075
+Stage 1-2 [age included in model] recall overall 0.276
+  outer quartiles    unadjusted       OR 4.544 [2.520, 8.192] p=0.000
+  outer quartiles    adj. panel size  OR 4.239 [2.341, 7.677] p=0.000
+  outer deciles      unadjusted       OR 3.653 [2.331, 5.725] p=0.000
+  outer deciles      adj. panel size  OR 3.310 [2.092, 5.236] p=0.000
+Size-detection slope of the top-10% rule among excluded providers: -0.252 per SD of log panel size [-0.474, -0.031], p=0.0255; recall 0.252
+Stage 3: adjusting for provider-type share instead: OR 1.159, p=0.581
+Stage 5: cut 2024-01-01: positives 365 (rerun with the date as 2nd argument)

@@ -1,0 +1,137 @@
+CMS Stage 0 summary: within-specialty (top 8 specialties, year 2022), provider-weighted. R=median reliability, ge0.7=share R>=0.7, m=expected quartile-split misclassification.
+fill = suppressed counts (1-10) set to 5.5 (main) or 0 (sensitivity)
+
+[fill 5.5] R
+band               11-20  21-50  51-100   101+
+attribute                                     
+Asian/Pacific Is.  0.580  0.744   0.862  0.958
+Black              0.630  0.777   0.880  0.964
+Hispanic           0.615  0.766   0.875  0.963
+Native American    0.651  0.796   0.894  0.968
+Other race         0.498  0.675   0.816  0.940
+age 65-74          0.470  0.661   0.789  0.901
+age 75-84          0.374  0.578   0.734  0.873
+age <65            0.667  0.815   0.898  0.960
+age >84            0.582  0.756   0.858  0.935
+dual-eligible      0.718  0.853   0.925  0.973
+female             0.269  0.413   0.561  0.769
+mean age           0.628  0.766   0.848  0.937
+non-White (any)    0.870  0.938   0.970  0.990
+
+[fill 5.5] ge07
+band               11-20  21-50  51-100   101+
+attribute                                     
+Asian/Pacific Is.  0.147  0.691   0.961  1.000
+Black              0.379  0.760   0.975  1.000
+Hispanic           0.261  0.768   0.952  1.000
+Native American    0.441  0.804   1.000  1.000
+Other race         0.000  0.526   0.843  1.000
+age 65-74          0.000  0.374   0.859  0.988
+age 75-84          0.000  0.110   0.688  0.990
+age <65            0.348  0.937   1.000  1.000
+age >84            0.109  0.757   0.964  1.000
+dual-eligible      0.639  1.000   1.000  1.000
+female             0.000  0.000   0.404  0.739
+mean age           0.374  0.740   0.866  0.976
+non-White (any)    1.000  1.000   1.000  1.000
+
+[fill 5.5] m
+band               11-20  21-50  51-100   101+
+attribute                                     
+Asian/Pacific Is.  0.338  0.264   0.189  0.096
+Black              0.316  0.244   0.174  0.085
+Hispanic           0.322  0.250   0.178  0.087
+Native American    0.308  0.234   0.164  0.081
+Other race         0.370  0.298   0.220  0.121
+age 65-74          0.381  0.307   0.238  0.157
+age 75-84          0.412  0.343   0.271  0.183
+age <65            0.303  0.226   0.163  0.098
+age >84            0.339  0.258   0.194  0.127
+dual-eligible      0.280  0.202   0.141  0.077
+female             0.439  0.395   0.337  0.232
+mean age           0.314  0.246   0.191  0.114
+non-White (any)    0.187  0.129   0.087  0.034
+
+[fill 0] R
+band               11-20  21-50  51-100   101+
+attribute                                     
+Asian/Pacific Is.  0.877  0.947   0.971  0.990
+Black              0.892  0.955   0.976  0.991
+Hispanic           0.894  0.956   0.977  0.992
+Native American    0.940  0.975   0.986  0.995
+Other race         0.325  0.537   0.692  0.870
+age 65-74          0.680  0.826   0.902  0.957
+age 75-84          0.612  0.783   0.880  0.949
+age <65            0.691  0.830   0.908  0.965
+age >84            0.639  0.794   0.877  0.944
+dual-eligible      0.758  0.883   0.930  0.974
+female             0.401  0.509   0.638  0.822
+mean age           0.628  0.766   0.848  0.937
+non-White (any)    0.891  0.954   0.976  0.992
+
+[fill 0] ge07
+band               11-20  21-50  51-100   101+
+attribute                                     
+Asian/Pacific Is.  1.000  1.000   1.000  1.000
+Black              1.000  1.000   1.000  1.000
+Hispanic           1.000  1.000   1.000  1.000
+Native American    1.000  1.000   1.000  1.000
+Other race         0.000  0.070   0.388  0.990
+age 65-74          0.489  0.928   0.996  1.000
+age 75-84          0.129  0.871   0.999  1.000
+age <65            0.491  0.954   1.000  1.000
+age >84            0.282  0.799   0.986  1.000
+dual-eligible      0.899  0.995   1.000  1.000
+female             0.000  0.078   0.566  0.787
+mean age           0.374  0.740   0.866  0.976
+non-White (any)    1.000  1.000   1.000  1.000
+
+[fill 0] m
+band               11-20  21-50  51-100   101+
+attribute                                     
+Asian/Pacific Is.  0.178  0.119   0.083  0.035
+Black              0.167  0.110   0.075  0.029
+Hispanic           0.166  0.108   0.072  0.027
+Native American    0.123  0.077   0.044  0.017
+Other race         0.423  0.360   0.292  0.183
+age 65-74          0.296  0.217   0.159  0.101
+age 75-84          0.327  0.245   0.179  0.114
+age <65            0.290  0.215   0.155  0.090
+age >84            0.311  0.232   0.176  0.115
+dual-eligible      0.256  0.180   0.135  0.074
+female             0.404  0.364   0.308  0.205
+mean age           0.314  0.246   0.191  0.114
+non-White (any)    0.168  0.110   0.075  0.029
+
+Suppressed share of providers (n>10, 2022):
+        attribute  suppressed_share
+         mean age             0.000
+          age <65             0.465
+        age 65-74             0.174
+        age 75-84             0.282
+          age >84             0.474
+           female             0.000
+  non-White (any)             0.000
+            Black             0.692
+Asian/Pacific Is.             0.817
+         Hispanic             0.753
+  Native American             0.666
+       Other race             0.808
+    dual-eligible             0.000
+
+Test-retest r by min panel size:
+        attribute   all  n 11-20  n 21-50  n 51-100  n 101+
+         mean age 0.910    0.882    0.898     0.904   0.920
+          age <65 0.745    0.285    0.530     0.801   0.887
+        age 65-74 0.712    0.151    0.478     0.755   0.890
+        age 75-84 0.601    0.079    0.341     0.530   0.756
+          age >84 0.671    0.160    0.449     0.747   0.866
+           female 0.822    0.774    0.723     0.799   0.888
+  non-White (any) 0.679    0.239    0.165     0.436   0.703
+            Black 0.737    0.317    0.399     0.656   0.837
+Asian/Pacific Is. 0.715    0.233    0.288     0.556   0.829
+         Hispanic 0.751    0.430    0.415     0.641   0.864
+  Native American 0.631    0.255    0.279     0.516   0.694
+       Other race 0.617    0.200    0.166     0.436   0.630
+    dual-eligible 0.704    0.440    0.320     0.499   0.787
+       risk score 0.908    0.781    0.860     0.905   0.954
