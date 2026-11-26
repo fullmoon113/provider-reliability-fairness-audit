@@ -1,11 +1,9 @@
-# Code and data: Unreliable Aggregate Sensitive Attributes Can Manufacture Fairness Gaps
-
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23369043.svg)](https://doi.org/10.5281/zenodo.23369043)
+# Code and data: Unreliable Sensitive Attributes Manufacture Fairness Gaps
 
 Reproducibility package for
 
-> M. Byeon and J. Yang, "Unreliable Aggregate Sensitive Attributes Can Manufacture Fairness Gaps: Bringing Provider
-> Profiling Reliability into Algorithmic Fairness Auditing," submitted to *IEEE Access*, 2026.
+> M. Byeon and J. Yang, "Unreliable Aggregate Sensitive Attributes Manufacture Fairness Gaps: A Reliability Check for
+> Provider-Level Audits," submitted to *IEEE Access*, 2026.
 
 The paper shows that, when a sensitive attribute is an aggregate of a few patients per provider, apparent fairness gaps in
 fraud-detection audits can come from sampling noise in that attribute (its reliability depends on panel size), and
@@ -33,32 +31,50 @@ python src/make_null_sim_csv.py && python src/simfig.py   # Figs. 5-6
 To rebuild the feature table from the raw Kaggle files, put the four `Train_*` CSV files in `data/raw/` and run
 `python src/01_build_features.py` (see `data/DATA.md`).
 
+## Stage 0 in five lines
+
+```python
+import sys; sys.path.insert(0, 'src')
+from stage0 import stage0_reliability
+res = stage0_reliability(units_df, unit='n_patients', attr='mean_age', partition='outer', sigma_w=12.7)
+print(res['summary'])       # tau^2, Q test, median R, expected misclassification, decision
+```
+
 ## What each script reproduces
 
 | Script | Reproduces |
 |---|---|
 | `src/01_build_features.py` | Kaggle raw CSVs -> `data/provider_features_FINAL.csv` (feature table, 5-fold split, partition labels) |
 | `src/02_experiments.py` | Main tables: model performance (Table 1), unadjusted and panel-size-adjusted odds ratios (Table 3), specificity test, multi-seed runs, Fairlearn |
-| `src/reliability_decomposition.py` | Stage 0: variance decomposition (20.75 = 20.50 + 0.247), per-provider reliability, Table 2 |
+| `src/reliability_decomposition.py` | Stage 0: variance decomposition (20.75 = 20.50 + 0.247 by moments; REML tau^2 = 0.812), per-provider reliability, Table 2 |
 | `src/prespecified_partitions.py` | Partition-independent checks: continuous age, each age tail separately, pooled Q1+Q4 (class-weighted model) |
 | `src/cms_coupling_check.py` | Sampling-induced vs substantive coupling of mean patient age and panel size in CMS 2021-2022 |
-| `src/leie_cms_check.py` | LEIE-labelled check on the CMS 2021-22 panel (supplementary): needs the public LEIE file `UPDATED.csv` from oig.hhs.gov, passed as the first argument; optional 2nd/3rd arguments are the exclusion-date cut and the flagged share. Output used in the paper: `results/leie_cms_check_output.txt` |
-| `src/noisy_attribute_comparison.py` | Comparison with noise-tolerant fairness methods on the null simulation (conditional-independence check, noise-corrected gap, equalized-odds post-processing); `SD_TRUE=1.77` / `3.56` and `SIM_REPS` select regime and replicates (Table 9) |
-| `src/eiv_remedy.py` | Errors-in-variables check: regression calibration (posterior probability of true outer-quartile membership) against the unadjusted and size-adjusted audits, in the null simulation and with a planted effect; `SIM_REPS` sets replicates. Output: `output/eiv_remedy_output.txt` (Table S13) |
-| `src/cms_multi_attribute.py` | Reliability of age, share female, share non-White, share dual-eligible and mean risk score in two CMS "by Provider" files (passed as arguments, downloaded from data.cms.gov): variance decomposition and year-to-year correlation by panel size. Output used in the paper (CMS 2021 and 2022 files): `output/cms_multi_attribute_output.txt` (Table S14) |
+| `src/noisy_attribute_comparison.py` | Comparison with noise-tolerant fairness methods on the null simulation (conditional-independence check, noise-corrected gap, equalized-odds post-processing); `SD_TRUE=1.77` / `3.56` and `SIM_REPS` select regime and replicates (Table 10) |
 | `src/table_s1_or.py` | Odds ratios across five random seeds (Table S1) |
 | `src/table4_firth.py`, `src/firth.py`, `src/firth_validate.py` | Seven alternative covariates; Firth penalized-likelihood fits; Holm correction (Table 4). `firth.py` is our own implementation of Firth's logistic regression |
 | `src/base_stability.py` | Unadjusted OR across resampling strategies and seeds |
 | `src/pipeline_sensitivity.py` | Sensitivity of the shrunken-attribute result to feature set, resampling and sigma^2_true |
-| `src/refit_sweep.py` | Shrunken attribute with the model refitted on the same partition (Table 8 logic: the partition used to resample is the one the disparity is evaluated on) |
-| `src/fpr_class_weighting.py` | Class weighting; false-positive-rate side of equalized odds; shrunken rows (Tables 7, 8) |
+| `src/refit_sweep.py` | Shrunken attribute with the model refitted on the same partition (Table 9 logic: the partition used to resample is the one the disparity is evaluated on) |
+| `src/fpr_class_weighting.py` | Class weighting; false-positive-rate side of equalized odds; shrunken rows (Tables 8, 9) |
 | `src/pooled_smote_no_resampling.py` | Pooled SMOTE and no-resampling comparators |
 | `src/fpr_by_strategy.py` | Flag rates among fraud / non-fraud providers by group and strategy |
 | `src/null_sim.py`, `src/sim5k.py` | Null simulation (true age effect is zero by construction; 5,000 replicates, seed 20260910) and the CMS-calibrated regimes. `SIM_REPS=50 python src/sim5k.py` gives a quick smoke test |
-| `src/make_figures_1_2.py` | Fig. 1 (causal graph) and Fig. 3 (detection rate and panel size by age quartile). Fig. 2 (staged-audit flowchart) is a schematic drawn for the paper and has no data script |
-| `src/make_figure_specificity.py` | p-values by control variable (supplementary figure; not in the main text) |
-| `src/make_null_sim_csv.py`, `src/simfig.py` | Fig. 5 (null-simulation distribution, 5,000 replicates) and Fig. 6 (significant-disparity rate against the true between-provider SD; the plotted rates are those printed by `sim5k.py`) |
+| `src/make_figures_1_2.py` | Fig. 1 (causal graph) and Fig. 2 (detection rate and panel size by age quartile) |
+| `src/make_figure_specificity.py` | Fig. 3 (p-values by control variable) |
+| `src/make_null_sim_csv.py`, `src/simfig.py` | Fig. 5 (null-simulation distribution, 5,000 replicates) and Fig. 6 (false-positive rate against the true between-provider SD; the plotted rates are those printed by `sim5k.py`) |
 | `src/make_figure_cms.py` | Fig. 4 (CMS replication, reads `data/cms_*.csv.gz`) |
+| `src/stage0.py` | Importable Stage 0 check: `stage0_reliability(df, unit, attr, partition)` returns REML tau^2, Cochran Q, per-unit reliability, expected misclassification M and the decision |
+| `src/supplement_runs.py`, `src/sim_panelB.py`, `src/make_supplement.py` | Supplement Tables S1 to S17: re-runs for S1, S4, S5, S8, S10, S11; slope sweep for S7 Panel B; `make_supplement.py OUTDIR` assembles `supplement.tex` from the saved outputs |
+| `src/audit_common.py`, `src/simparams.py` | Shared helpers; `STRATEGY=class_weight` (default, primary) or `group_smote` selects the training strategy and the matching simulation coefficients |
+| `src/primary_cw.py`, `src/table4_cw.py`, `src/cw_text_numbers.py` | Primary results under class weighting: Tables 1, 3, 4, 6, flagging among negatives, fairness and mitigation, shrinkage, partitions and Holm, thresholds, functional forms |
+| `src/variance_component_inference.py` | REML tau^2, profile interval, Cochran Q and boundary LRT (Stage 0) |
+| `src/rstar_table.py`, `src/misclassification_by_reliability.py` | m(R) and the required reliability R*(eps) (Table 1 of the paper) |
+| `src/prop1_analytic.py` | Analytic prediction of Proposition 1 for the outer, top-quartile and median partitions |
+| `src/ablation_size_features.py` | Training without panel-size features (13/10/8 features) for the three classifiers |
+| `src/cms_stage0_sweep.py` | Stage 0 for 14 aggregate attributes in CMS files, by panel-size band and within specialty (`--zero` sets suppressed counts to 0) |
+| `src/cms_exposure.py` | Probability that an audit of m fraud-labelled providers reports a spurious disparity, by specialty |
+| `src/planted_effect_power.py`, `src/eiv_remedy.py` | Type I error and power with a planted true effect; errors-in-variables comparison |
+| `src/make_fig2_cw.py`, `src/make_fig_null.py`, `src/make_fig_exposure.py` | Figures 3, 5 and the exposure figure |
 
 Scripts `refit_sweep.py`, `fpr_class_weighting.py`, `pooled_smote_no_resampling.py`, `fpr_by_strategy.py` and
 `make_figures_1_2.py` (and `prespecified_partitions.py`) load one another by file name; keep them together in `src/`.
@@ -69,15 +85,12 @@ See [`data/DATA.md`](data/DATA.md). Everything is public and needs no data use a
 like synthetic data (random beneficiary-provider linkage), which the paper discloses; the real-data evidence comes from the
 CMS Medicare "by Provider" public use files.
 
-## Randomised mitigation (Fairlearn)
+## Known reproducibility caveat
 
-`ExponentiatedGradient.predict()` returns a draw from a randomised classifier, so one call is one sample. The script therefore
-fits once per fold and draws 30 predictions per fold with fixed seeds (`random_state=r`), and prints the mean and SD over draws and a
-bootstrap interval for the reduction in the equalized-odds difference. With Fairlearn 0.15 and scikit-learn 1.8 it prints
-F1 0.4496 (SD 0.0040), equalized-odds difference 0.0282 (0.0053), mid-range recall 0.822, extreme-age recall 0.837, and the
-difference falls in 30 of 30 draws (these are the values in the paper). Single draws under Fairlearn 0.12-0.14 give F1 0.442-0.454
-and 0.026-0.031. Fairlearn 0.9 and 0.11 do not run with scikit-learn 1.8 (`force_all_finite` removed). Everything else in
-`02_experiments.py` matches the paper exactly.
+The exponentiated-gradient (equalized-odds) mitigation at the end of `02_experiments.py` depends on the installed Fairlearn
+version. The paper reports F1 0.462 and an equalized-odds difference of 0.0263; Fairlearn 0.15 gives F1 0.456 and 0.0275
+(0.12 and 0.13 give F1 0.442 and 0.0244 and 0.0237). The qualitative result is the same in every version: the difference falls to about
+0.02-0.03 and F1 falls by 0.06-0.08, with the loss on mid-range providers. Everything else in `02_experiments.py` matches the paper exactly.
 
 ## Numerical sensitivity
 
