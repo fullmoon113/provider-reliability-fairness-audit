@@ -17,8 +17,8 @@ logn = np.log1p(n)
 z = (logn - logn.mean()) / logn.std(ddof=1)
 
 SW = 12.7275          # within-provider patient age SD
-B_FRAUD = (-2.975, 1.398)
-B_DET   = ( 1.261, 0.901)
+import sys; sys.path.insert(0, str(HERE))
+from simparams import B_FRAUD, B_DET
 MU_AGE  = d.AvgPatientAge.mean()
 
 def logistic(t): return 1.0 / (1.0 + np.exp(-t))

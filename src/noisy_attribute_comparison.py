@@ -24,7 +24,7 @@ warnings.filterwarnings("ignore")
 spec = importlib.util.spec_from_file_location("ns", str(HERE / "null_sim.py"))
 ns = importlib.util.module_from_spec(spec); sys.modules["ns"] = ns; spec.loader.exec_module(ns)
 
-R = int(os.environ.get('SIM_REPS', 2000)); SEED = 20261014; SD_TRUE = float(os.environ.get('SD_TRUE', 0.50))   # 0.50 = primary dataset; 1.77 and 3.56 = CMS-calibrated
+R = int(os.environ.get('SIM_REPS', 2000)); SEED = 20261014; SD_TRUE = float(os.environ.get('SD_TRUE', 0.90))   # 0.90 = primary dataset (REML); 1.65 and 3.47 = CMS-calibrated
 rng = np.random.default_rng(SEED)
 n, logn = ns.n, ns.logn
 p_f = ns.logistic(ns.B_FRAUD[0] + ns.B_FRAUD[1] * ns.z)

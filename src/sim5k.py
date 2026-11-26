@@ -20,7 +20,7 @@ def se(p, k):
     return 100 * np.sqrt((p / 100) * (1 - p / 100) / k)
 
 print("=== Panel A: true between-provider SD (5,000 reps) ===", flush=True)
-for sd in [0.0, 0.5, 1.0, 2.0, 4.0, 6.0]:
+for sd in ([] if os.environ.get('SKIP_A') else [0.0, 0.5, 1.0, 2.0, 4.0, 6.0]):
     r = ns.run(sd, R, SEED)
     out[f'A|{sd}'] = dict(r, se_u=se(r['fpr_u'], r['reps']))
     print(f"  sd={sd:4.1f}  unadj {r['fpr_u']:5.2f}% (SE {se(r['fpr_u'],r['reps']):.2f})"
@@ -28,13 +28,13 @@ for sd in [0.0, 0.5, 1.0, 2.0, 4.0, 6.0]:
 
 print("\n=== Panel C: CMS-calibrated regimes (5,000 reps) ===", flush=True)
 scen = [("Primary dataset (baseline)", 0.50, 1),
-        ("CMS, most homogeneous specialty", 1.77, 1),
-        ("CMS, specialty median", 3.56, 1),
-        ("CMS, all providers pooled", 4.93, 1),
-        ("CMS specialty median, >=11", 3.56, 11),
-        ("CMS specialty median, >=50", 3.56, 50),
-        ("CMS most homogeneous, >=11", 1.77, 11),
-        ("CMS most homogeneous, >=50", 1.77, 50)]
+        ("CMS, most homogeneous specialty", 1.65, 1),
+        ("CMS, specialty median", 3.47, 1),
+        ("CMS, all providers pooled", 4.85, 1),
+        ("CMS specialty median, >=11", 3.47, 11),
+        ("CMS specialty median, >=50", 3.47, 50),
+        ("CMS most homogeneous, >=11", 1.65, 11),
+        ("CMS most homogeneous, >=50", 1.65, 50)]
 for lbl, sd, thr in scen:
     sub = nfull[nfull >= thr]
     r = ns.run_with_n(sub, sd, R, SEED) if thr > 1 else ns.run(sd, R, SEED)
@@ -44,5 +44,5 @@ for lbl, sd, thr in scen:
           f"  unadj {r['fpr_u']:5.2f}% (SE {se(r['fpr_u'],r['reps']):.2f})"
           f"  adj {r['fpr_a']:4.2f}%", flush=True)
 
-json.dump(out, open(OUT/'sim5k.json', 'w'))
+json.dump(out, open(OUT/('sim5k_C.json' if os.environ.get('SKIP_A') else 'sim5k.json'), 'w'))
 print("\nDONE", flush=True)

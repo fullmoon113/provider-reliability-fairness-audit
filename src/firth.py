@@ -44,15 +44,15 @@ def fit_firth(X, y, maxiter=200, tol=1e-8, ridge=1e-10):
     return beta
 
 def firth_plr_test(X_full, y, drop_idx):
-    """PLR test for dropping column drop_idx from X_full."""
+    """Penalized likelihood ratio test of beta[drop_idx] = 0 (Heinze and Schemper 2002): the Jeffreys penalty of the FULL model is kept
+    under the null, and the penalized log-likelihood is maximized over the remaining coefficients with beta[drop_idx] fixed at 0."""
+    from scipy.optimize import minimize
     beta_full = fit_firth(X_full, y)
     ll_full = firth_penalized_loglik(beta_full, X_full, y)
-    cols = [i for i in range(X_full.shape[1]) if i != drop_idx]
-    X_red = X_full[:, cols]
-    beta_red = fit_firth(X_red, y)
-    ll_red = firth_penalized_loglik(beta_red, X_red, y)
-    lr = 2*(ll_full - ll_red)
-    lr = max(lr, 0)
-    p = stats.chi2.sf(lr, df=1)
-    beta_target = beta_full[drop_idx]
-    return np.exp(beta_target), p
+    other = [i for i in range(X_full.shape[1]) if i != drop_idx]
+    def negll(b):
+        bb = np.zeros(X_full.shape[1]); bb[other] = b
+        return -firth_penalized_loglik(bb, X_full, y)
+    res = minimize(negll, beta_full[other], method='BFGS')
+    lr = max(2 * (ll_full + res.fun), 0)
+    return np.exp(beta_full[drop_idx]), stats.chi2.sf(lr, df=1)

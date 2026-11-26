@@ -87,7 +87,7 @@ def emit(s=''):
 
 rng = np.random.default_rng(SEED)
 methods = ['naive', 'adj. size', 'RC', 'RC + size', 'oracle']
-for sd_true in (0.50, 1.77):
+for sd_true in (0.90, 1.65):
     for effect in (False, True):
         o = run(sd_true, effect, rng)
         emit(f"\n=== true between-provider SD {sd_true}; true age effect: {'OR 0.70 in outer true quartiles' if effect else 'none (null)'}; {len(o)} replicates ===")

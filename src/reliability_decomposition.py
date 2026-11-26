@@ -17,9 +17,19 @@ n = pf.TotalUniqueBene.values.astype(float)
 a = pf.AvgPatientAge.values
 SW = 12.7275                                   # within-provider SD of patient age (years)
 
+def reml_tau2(a, n, sw=SW):
+    """REML estimate of tau^2 with known sampling variances sw^2/n (random-effects model for provider means)."""
+    v = sw**2 / n
+    def nll(t):
+        w = 1 / (t + v); mu = (w * a).sum() / w.sum()
+        return 0.5 * (np.log(t + v).sum() + np.log(w.sum()) + (w * (a - mu) ** 2).sum())
+    g = np.linspace(0, 6, 6001); return g[np.argmin([nll(t) for t in g])]
+
 var_obs = a.var(ddof=1)
 var_samp = np.mean(SW**2 / n)
-var_true = var_obs - var_samp
+var_true_moment = var_obs - var_samp          # unweighted moment estimate (dominated by the smallest providers; imprecise)
+var_true = reml_tau2(a, n)                     # precision-weighted REML estimate, used for reliability
+print(f"unweighted moment estimate of tau^2: {var_true_moment:.3f}")
 rel = var_true / (var_true + SW**2 / n)
 
 print(f"providers                         {len(pf)}")

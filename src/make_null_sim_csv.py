@@ -16,7 +16,7 @@ import numpy as np, pandas as pd
 spec = importlib.util.spec_from_file_location("ns", str(HERE / "null_sim.py"))
 ns = importlib.util.module_from_spec(spec); sys.modules["ns"] = ns; spec.loader.exec_module(ns)
 
-SD_TRUE, REPS, SEED = 0.50, 5000, 20260910   # same replicates as the paper's 5,000-replicate null simulation (sim5k.py, Panel A, SD 0.50)
+SD_TRUE, REPS, SEED = 0.90, 5000, 20260910   # same replicates as the paper's 5,000-replicate null simulation (sim5k.py, Panel A, SD 0.50)
 rng = np.random.default_rng(SEED)
 n, logn = ns.n, ns.logn
 p_f = ns.logistic(ns.B_FRAUD[0] + ns.B_FRAUD[1] * ns.z)
