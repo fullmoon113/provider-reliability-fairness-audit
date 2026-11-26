@@ -1,0 +1,14 @@
+# Environment of the v1.3 outputs: Python 3.13.18, Linux x86-64. Install with: pip install -r requirements-lock.txt
+fairlearn==0.15.0
+imbalanced-learn==0.14.2
+joblib==1.6.0
+matplotlib==3.11.2
+numpy==2.5.3
+pandas==3.0.5
+patsy==1.0.3
+scikit-learn==1.9.1
+scipy==1.18.1
+sklearn-compat==0.1.6
+statsmodels==0.15.0
+threadpoolctl==3.7.0
+xgboost==3.4.1
