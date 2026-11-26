@@ -10,7 +10,7 @@ Physical Therapist in Private Practice      57093     62    9.47  3.26      15.5
 Internal Medicine                           84859    218   12.79  3.73       9.7%  0.949 |  0.996  0.991  0.983  0.978
 Nurse Practitioner                         143616    116   15.86  6.22       9.1%  0.947 |  0.995  0.990  0.981  0.975
 
-Expected significant-disparity rate (%) of the unadjusted audit under the null, nominal 5%, by number of fraud-labelled audited providers m
+Expected significant-disparity rate (%) of the unadjusted audit under the null, nominal 5%, by number of fraud-labeled audited providers m
 
 -- detection slope gamma1 = 0.25 per SD of log panel size
 m                                              500     2000    10000   100000

@@ -1,11 +1,11 @@
-== Quartile detection (fraud-labelled)
+== Quartile detection (fraud-labeled)
 Q1: n_fraud=73 det=0.808 median panel (fraud) 59; median panel (all) 15
 Q2: n_fraud=180 det=0.872 median panel (fraud) 129; median panel (all) 44
 Q3: n_fraud=197 det=0.893 median panel (fraud) 203; median panel (all) 50
 Q4: n_fraud=56 det=0.750 median panel (fraud) 61; median panel (all) 12
 Q1 vs Q4 diff 0.05821917808219179 Fisher p 0.5191014902037543
   95% CI -0.08676141128597997 0.20319976745036356
-median panel size, fraud-labelled: middle quartiles pooled 152.0  outer 60.0
+median panel size, fraud-labeled: middle quartiles pooled 152.0  outer 60.0
 all providers: ext median 13.0 mid 47.0
 t on log panel size -36.40382936614786 1.003433553329071e-259
 

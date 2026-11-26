@@ -1,32 +1,44 @@
 
-=== true between-provider SD 0.9; true age effect: none (null); 1000 replicates ===
-estimator   median OR      [2.5%, 97.5%]  p<0.05 (%)
-naive           0.440     [0.266, 0.785]        83.6
-adj. size       1.039     [0.560, 2.127]         6.6
-RC              1.036    [0.745, 12.345]        14.9
-RC + size       1.025     [0.703, 5.835]         4.4
-oracle          1.020     [0.614, 1.682]         4.6
+=== true between-provider SD 0.9; true age effect: none (null); 2000 replicates ===
+tau^2 estimates (true 0.810): DerSimonian-Laird median 0.808 (IQR 0.760-0.860); unweighted moment median 0.789 (IQR 0.267-1.324)
+estimator                 median OR      [2.5%, 97.5%]  p<0.05 (%)
+naive                         0.436     [0.263, 0.781]        84.8
+adj. size                     1.018     [0.560, 2.024]         5.9
+RC                            1.000     [0.839, 1.190]         0.4
+RC + size                     1.002     [0.674, 1.687]         4.8
+RC, moment tau2               1.017    [0.741, 13.601]        15.3
+RC + size, moment tau2        1.019     [0.687, 6.859]         4.6
+oracle                        1.003     [0.606, 1.657]         4.7
 
-=== true between-provider SD 0.9; true age effect: OR 0.70 in outer true quartiles; 1000 replicates ===
-estimator   median OR      [2.5%, 97.5%]  p<0.05 (%)
-naive           0.425     [0.257, 0.732]        91.9
-adj. size       0.968     [0.544, 1.768]         5.6
-RC              0.979    [0.724, 11.150]        20.3
-RC + size       0.965     [0.673, 3.158]         5.4
-oracle          0.721     [0.458, 1.158]        26.2
+=== true between-provider SD 0.9; true age effect: OR 0.70 in outer true quartiles; 2000 replicates ===
+tau^2 estimates (true 0.810): DerSimonian-Laird median 0.809 (IQR 0.761-0.857); unweighted moment median 0.753 (IQR 0.231-1.361)
+estimator                 median OR      [2.5%, 97.5%]  p<0.05 (%)
+naive                         0.427     [0.260, 0.696]        91.1
+adj. size                     0.967     [0.536, 1.787]         6.2
+RC                            0.984     [0.838, 1.159]         1.1
+RC + size                     0.961     [0.667, 1.468]         5.5
+RC, moment tau2               1.009    [0.729, 12.145]        19.6
+RC + size, moment tau2        0.974     [0.672, 3.217]         6.0
+oracle                        0.738     [0.451, 1.209]        23.7
 
-=== true between-provider SD 1.65; true age effect: none (null); 1000 replicates ===
-estimator   median OR      [2.5%, 97.5%]  p<0.05 (%)
-naive           0.583     [0.351, 0.987]        53.4
-adj. size       0.998     [0.564, 1.893]         5.6
-RC              1.019     [0.815, 1.305]         3.5
-RC + size       1.012     [0.690, 1.490]         5.1
-oracle          1.003     [0.579, 1.670]         4.8
+=== true between-provider SD 1.65; true age effect: none (null); 2000 replicates ===
+tau^2 estimates (true 2.722): DerSimonian-Laird median 2.717 (IQR 2.619-2.823); unweighted moment median 2.734 (IQR 2.170-3.285)
+estimator                 median OR      [2.5%, 97.5%]  p<0.05 (%)
+naive                         0.577     [0.346, 0.961]        55.1
+adj. size                     1.005     [0.568, 1.793]         4.2
+RC                            1.002     [0.831, 1.194]         0.5
+RC + size                     1.005     [0.704, 1.471]         3.9
+RC, moment tau2               1.008     [0.806, 1.288]         3.4
+RC + size, moment tau2        1.006     [0.706, 1.492]         4.0
+oracle                        0.997     [0.600, 1.638]         4.2
 
-=== true between-provider SD 1.65; true age effect: OR 0.70 in outer true quartiles; 1000 replicates ===
-estimator   median OR      [2.5%, 97.5%]  p<0.05 (%)
-naive           0.544     [0.332, 0.909]        69.5
-adj. size       0.918     [0.537, 1.614]         7.3
-RC              0.967     [0.790, 1.277]         4.7
-RC + size       0.922     [0.660, 1.328]         8.0
-oracle          0.738     [0.460, 1.211]        23.5
+=== true between-provider SD 1.65; true age effect: OR 0.70 in outer true quartiles; 2000 replicates ===
+tau^2 estimates (true 2.722): DerSimonian-Laird median 2.716 (IQR 2.616-2.815); unweighted moment median 2.759 (IQR 2.202-3.316)
+estimator                 median OR      [2.5%, 97.5%]  p<0.05 (%)
+naive                         0.542     [0.330, 0.910]        67.5
+adj. size                     0.912     [0.529, 1.667]         7.2
+RC                            0.957     [0.801, 1.156]         2.1
+RC + size                     0.915     [0.659, 1.351]         8.6
+RC, moment tau2               0.960     [0.775, 1.253]         5.6
+RC + size, moment tau2        0.916     [0.661, 1.355]         8.6
+oracle                        0.739     [0.451, 1.177]        23.8
