@@ -1,5 +1,5 @@
 """
-LEIE-labelled check on CMS data (supplementary; reviewer item 1b).
+LEIE-labelled check on CMS data (supplementary).
 
 Labels: providers in the CMS 2021-22 panel (data/cms_2021_2022_merged.csv.gz) whose NPI appears in the
 OIG List of Excluded Individuals/Entities (LEIE) with an exclusion date AFTER the claims window
@@ -91,6 +91,13 @@ for name, XX in [("age excluded from model", X), ("age included in model", X_wit
     disparity(flag, q[1], q[2], "outer quartiles")
     disparity(flag, q[0], q[3], "outer deciles")
 flag = oof_flags(X, y)  # Stage 3 below uses the age-excluded model
+
+# size-detection slope of the screening rule among excluded providers, per SD of log panel size (all providers)
+zV = ((cms["logV"] - cms["logV"].mean()) / cms["logV"].std()).values
+fs = sm.Logit(flag[y == 1].astype(float), sm.add_constant(zV[y == 1])).fit(disp=0)
+cs = fs.conf_int()[1]
+print(f"Size-detection slope of the top-{FLAG:.0%} rule among excluded providers: {fs.params[1]:.3f} per SD of log panel size "
+      f"[{cs[0]:.3f}, {cs[1]:.3f}], p={fs.pvalues[1]:.4f}; recall {flag[y == 1].mean():.3f}")
 
 # Stage 3 specificity: share of the provider's type among positives is a non-panel-size control
 tshare = types.map(types.value_counts(normalize=True)).values

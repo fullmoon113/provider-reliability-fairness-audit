@@ -9,7 +9,7 @@ warnings.filterwarnings("ignore")
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SMOTE
-pf=pd.read_csv(str(DATA/'provider_features_FINAL.csv'))
+pf=pd.read_csv(str(DATA/'provider_features.csv'))
 F13=['IP_UniqueBene','IP_AvgReimbursed','IP_AvgLOS','IP_AvgDiagCodes','IP_UniqueAttPhysician',
  'OP_AvgReimbursed','OP_AvgDiagCodes','OP_UniqueAttPhysician','TotalUniqueBene',
  'FemaleRatio','AvgChronicCondCount','DeceasedRatio','ClaimsPerBene']

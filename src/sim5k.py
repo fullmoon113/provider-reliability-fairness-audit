@@ -12,7 +12,7 @@ spec.loader.exec_module(ns)
 import os
 R = int(os.environ.get('SIM_REPS', 5000))   # 5000 for the paper; set SIM_REPS=50 for a quick smoke test
 SEED = 20260910
-d = pd.read_csv(str(DATA/'provider_features_FINAL.csv'))
+d = pd.read_csv(str(DATA/'provider_features.csv'))
 nfull = d.TotalUniqueBene.values.astype(float)
 out = {}
 

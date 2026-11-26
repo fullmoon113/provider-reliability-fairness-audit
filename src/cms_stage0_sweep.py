@@ -4,7 +4,7 @@ ROOT = HERE.parent
 OUT = ROOT / 'output'
 
 """
-Stage 0 sweep on CMS "Medicare Physician & Other Practitioners - by Provider" files (work order M5).
+Stage 0 sweep on CMS "Medicare Physician & Other Practitioners - by Provider" files.
 
 For every provider-level aggregate attribute that an audit could partition on (mean age, age-band shares,
 share female, race-category shares, share dual-eligible, mean risk score) and each of two years, the script reports

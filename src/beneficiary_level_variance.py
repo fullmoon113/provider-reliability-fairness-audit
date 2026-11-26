@@ -1,6 +1,6 @@
 from pathlib import Path
 HERE = Path(__file__).resolve().parent; ROOT = HERE.parent; OUT = ROOT / 'output'; RAW = ROOT / 'data' / 'raw'
-"""Beneficiary-level tests of the true between-provider variance of patient age (work order M7).
+"""Beneficiary-level tests of the true between-provider variance of patient age.
 (1) One-way random-effects ANOVA of individual ages on provider (F test, ANOVA tau^2, intraclass correlation).
 (2) Cluster bootstrap over providers: resample providers with replacement and recompute the precision-weighted REML tau^2
     (sigma_w = 12.7275 known), 1,000 replicates; percentile interval. The ANOVA treats provider-beneficiary pairs as independent although a

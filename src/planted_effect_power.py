@@ -1,6 +1,6 @@
 """
-Type I error and power of the audit estimators when the attribute is an unreliable aggregate (reviewer item R2-2:
-"fairness-washing" guard).  A true detection penalty with odds ratio OR_true is planted on the TRUE group G* (outer quartiles of the
+Type I error and power of the audit estimators when the attribute is an unreliable aggregate (a guard against
+"fairness-washing").  A true detection penalty with odds ratio OR_true is planted on the TRUE group G* (outer quartiles of the
 true provider mean age A*).  Panel sizes are the empirical ones of the primary dataset (or resampled to a larger audit).
 Grid: OR_true in {1.0, 0.8, 0.7, 0.5}; tau in {0.9, 1.65, 3.47, 4.85}; corr(A*, log n) in {0, 0.24} (0.24 = coupling observed in CMS);
 audit size: primary (5,410 providers, ~506 fraud-labelled) and large (40,000 providers, ~3,700 fraud-labelled).

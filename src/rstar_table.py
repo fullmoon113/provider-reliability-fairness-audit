@@ -1,6 +1,6 @@
 from pathlib import Path
 HERE = Path(__file__).resolve().parent; ROOT = HERE.parent; OUT = ROOT / 'output'
-"""Required reliability R*(eps) for an admissible misclassification rate eps, by partition type (work order M8, Appendix B).
+"""Required reliability R*(eps) for an admissible misclassification rate eps, by partition type (Appendix B).
 m(R) = share of units placed in the wrong group when a normally distributed attribute with reliability R is split at fixed quantiles
 of the measured instead of the true value.  Also reports the audited population's expected misclassification M = mean_i m(R_i)
 for the primary dataset."""

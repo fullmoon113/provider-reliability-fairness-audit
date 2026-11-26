@@ -1,5 +1,5 @@
 """
-Ablation: remove the features that carry panel size and refit (reviewer item R2-5; paper limitation 2).
+Ablation: remove the features that carry panel size and refit (paper limitation 2).
 Feature sets: full (13 features) | no direct size (drops IP_UniqueBene, TotalUniqueBene, ClaimsPerBene)
               | no size-related (also drops the two attending-physician counts).
 Models: logistic regression, random forest, XGBoost; training: group-wise SMOTE (primary) and class weighting.

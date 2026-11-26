@@ -12,7 +12,7 @@ Reliability_i = sigma2_true / (sigma2_true + sigma_w^2 / n_i)   (Adams et al., 2
 """
 import numpy as np, pandas as pd
 
-pf = pd.read_csv(DATA / 'provider_features_FINAL.csv')
+pf = pd.read_csv(DATA / 'provider_features.csv')
 n = pf.TotalUniqueBene.values.astype(float)
 a = pf.AvgPatientAge.values
 SW = 12.7275                                   # within-provider SD of patient age (years)

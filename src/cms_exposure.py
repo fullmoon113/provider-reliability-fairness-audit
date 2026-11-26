@@ -1,5 +1,5 @@
 """
-CMS exposure analysis (reviewer item R2-1): where does the manufactured disparity matter in real claims?
+CMS exposure analysis: where does the manufactured disparity matter in real claims?
 
 For each of the eight largest CMS specialties (and all providers pooled) the script takes the panel-size distribution
 (2022, providers with >= 11 beneficiaries), the within-provider SD sigma_w and the true between-provider SD tau recovered

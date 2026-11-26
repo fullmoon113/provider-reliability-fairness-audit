@@ -20,7 +20,7 @@ FEATS = ['IP_UniqueBene', 'IP_AvgReimbursed', 'IP_AvgLOS', 'IP_AvgDiagCodes',
 SIZE_FEATS = ['IP_UniqueBene', 'TotalUniqueBene', 'ClaimsPerBene']   # features that carry panel size directly
 
 def load():
-    return pd.read_csv(DATA / 'provider_features_FINAL.csv')
+    return pd.read_csv(DATA / 'provider_features.csv')
 
 def outer(a):
     q = np.quantile(a, [.25, .75]); return ((a <= q[0]) | (a > q[1])).astype(int)

@@ -4,7 +4,7 @@ ROOT = HERE.parent
 OUT = ROOT / 'output'; OUT.mkdir(exist_ok=True)
 
 """
-Reliability of several provider-level demographic attributes in CMS data (reviewer item D-1).
+Reliability of several provider-level demographic attributes in CMS data .
 
 Question: is the low reliability of provider mean patient age specific to age, or does it apply to the other
 aggregate attributes a fairness audit could partition on (share female, share non-White, share dual-eligible,

@@ -24,5 +24,5 @@ for i in range(4):
 ax[1].set_ylim(0, 300); ax[1].set_ylabel('Median panel size'); ax[1].set_xticks(range(4)); ax[1].set_xticklabels(lab)
 ax[1].set_xlabel('Provider mean patient age, quartile'); ax[1].text(.90, .97, '(b)', transform=ax[1].transAxes, va='top', fontweight='bold')
 ax[1].legend(fontsize=7.5, loc='upper left', frameon=False, bbox_to_anchor=(0.08, .98))
-plt.tight_layout(); plt.savefig(OUT/'fig2_v3.png', dpi=300, bbox_inches='tight')
+plt.tight_layout(); plt.savefig(OUT/'fig2.png', dpi=300, bbox_inches='tight')
 print(rate, nf, med_f, med_a)

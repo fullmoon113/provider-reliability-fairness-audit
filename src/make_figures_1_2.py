@@ -26,7 +26,7 @@ ax.set_ylabel('Median Panel Size\n(Unique Beneficiaries)',fontweight='bold'); ax
 ax.set_title('(b) Confounding Factor: Provider Panel Size',fontweight='bold',pad=14); ax.set_ylim(0,max(vol)*1.22)
 for b,v in zip(bars,vol): ax.text(b.get_x()+b.get_width()/2,v+1.2,f'{v:.0f}',ha='center',fontsize=13,fontweight='bold')
 ax.grid(axis='y',alpha=0.3)
-plt.tight_layout(); plt.savefig(str(OUT/'Fig2_confounding.png'),bbox_inches='tight'); plt.close()
+plt.tight_layout(); plt.savefig(str(OUT/'fig2_group_smote.png'),bbox_inches='tight'); plt.close()
 
 # ---- DAG ----
 plt.rcParams.update({'font.size':13})
@@ -55,4 +55,4 @@ ax.text(7.85,4.30,'investigation\nintensity ?',ha='center',fontsize=11,color='#6
 ax.text(3.0,-0.05,r'effect under test'+'\n'+r'$A^* \rightarrow D$',ha='center',va='center',fontsize=11.5,color='#1f3864',fontweight='bold',bbox=bb,zorder=5)
 ax.text(3.75,1.75,'association the audit\nmeasures ($D$ on $A$)',ha='center',va='center',fontsize=10.5,color='#666',rotation=-27,bbox=bb,zorder=5)
 ax.text(5.75,6.85,r'Backdoor path  $A \leftarrow V \rightarrow D$  is open unless $V$ is adjusted for',ha='center',fontsize=13.5,color='#c44e52',fontweight='bold')
-plt.tight_layout(); plt.savefig(str(OUT/'Fig1_dag.png'),bbox_inches='tight',dpi=300); plt.close()
+plt.tight_layout(); plt.savefig(str(OUT/'fig1.png'),bbox_inches='tight',dpi=300); plt.close()

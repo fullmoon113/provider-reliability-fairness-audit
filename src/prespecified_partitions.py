@@ -5,7 +5,7 @@ DATA = ROOT / 'data'
 OUT = ROOT / 'output'; OUT.mkdir(exist_ok=True)
 
 """
-Partition-independent checks of the age disparity (reviewer point: the Q1+Q4 partition was defined after inspecting the
+Partition-independent checks of the age disparity (the Q1+Q4 partition was defined after inspecting the
 quartile pattern). Detection is taken from a class-weighted logistic model, so no resampling is stratified on any
 partition. Evaluated among the fraud-positive providers: (a) continuous mean patient age (per SD), (b) each tail
 separately versus the middle half, (c) the pooled Q1+Q4 partition, each unadjusted and adjusted for log(1 + panel size).

@@ -1,6 +1,6 @@
 from pathlib import Path
 HERE = Path(__file__).resolve().parent; ROOT = HERE.parent; OUT = ROOT / 'output'; RAW = ROOT / 'data' / 'raw'
-"""Permutation null (work order M2). Random re-linking of real patient ages to providers.
+"""Permutation null. Random re-linking of real patient ages to providers.
 Each (beneficiary, provider) pair keeps its provider, so panel sizes and the overall age distribution are unchanged;
 the ages are permuted across pairs, which removes every provider-level structure in patient age. For each permutation the
 provider mean age, the outer-quartile and top-quartile partitions and the reference audit (class-weighted LR detections, fixed

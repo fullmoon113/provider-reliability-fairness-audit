@@ -11,7 +11,7 @@ Reproduces the paper's Table 6 / Table A7 and adds CMS-calibrated scenarios.
 import numpy as np, pandas as pd, statsmodels.api as sm, warnings
 warnings.filterwarnings("ignore")
 
-d = pd.read_csv(str(DATA/'provider_features_FINAL.csv'))
+d = pd.read_csv(str(DATA/'provider_features.csv'))
 n = d.TotalUniqueBene.values.astype(float)
 logn = np.log1p(n)
 z = (logn - logn.mean()) / logn.std(ddof=1)

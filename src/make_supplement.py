@@ -91,10 +91,10 @@ w('The median panel size is 25 beneficiaries in the full simulated population an
 pe = pd.read_csv(OUT / 'planted_effect_power.csv'); pe = pe[pe.audit == 'primary']
 rows = []
 for _, r in pe.sort_values(['rho', 'tau', 'OR_true'], ascending=[True, True, False]).iterrows():
-    rows.append([f'{r.rho:.1f}', f'{r.tau:.1f}', f'{r.OR_true:.1f}', f'{r.naive_rej:.1f}', f'{r.adjusted_rej:.1f}', f'{r.shrunken_rej:.1f}', f'{r.RC_rej:.1f}', f'{r.procedure_rej:.1f}', f'{r.oracle_rej:.1f}'])
+    rows.append([f'{r.rho:.2f}', f'{r.tau:.2f}', f'{r.OR_true:.1f}', f'{r.naive_rej:.1f}', f'{r.adjusted_rej:.1f}', f'{r.shrunken_rej:.1f}', f'{r.RC_rej:.1f}', f'{r.procedure_rej:.1f}', f'{r.oracle_rej:.1f}'])
 sub('Panel D. Planted effect: rejection rate (\\%), 300 replications (type I error at OR = 1)',
  ['$\\rho$','$\\tau$','True OR','Unadjusted','Size-adjusted','Shrunken','Reg.\\ calib.','Procedure','Oracle'],rows,spec='rrrrrrrrr')
-w('$\\rho$ is the correlation between true provider mean age and standardized log panel size in the simulated population. The planted-effect table of the main text reports $\\rho=0$.\n')
+w('$\\rho$ is the correlation between true provider mean age and standardized log panel size in the simulated population (0.24 is the coupling observed in CMS). The planted-effect table of the main text reports $\\rho=0$. Shrunken is the outer-quartile partition of the empirical Bayes estimate with log panel size as covariate. Procedure applies Algorithm 1 with $\\varepsilon=10\\%$; it coincides with Shrunken in every cell because no simulated population meets $M\\le\\varepsilon$ and the $Q$ test rejects $\\tau^2=0$ in every replicate (no replicate declined).\n')
 # S8
 tab(8, 'Sensitivity to the functional form of panel size',
  'Adjusted odds ratio for extreme age-mix, class weighting.',
@@ -122,7 +122,7 @@ tab('10 (cont.)', 'Specificity: adjusted extreme age-mix effect when each altern
  'Each row gives the $p$-value for the extreme age-mix effect when the named characteristic replaces panel size as the control variable (heavy right-skewed characteristics enter on the log scale, as panel size does). Holm adjustment over the eight rows.',
  ['Control variable','$p$ (ML)','Holm (ML)','$p$ (Firth)','Holm (Firth)'],
  [['Panel size (log)','0.952','0.952','0.974','0.974'],['Mean length of stay','0.0004','0.0031','0.0004','0.0030'],['Chronic conditions','0.0023','0.0163','0.0022','0.0152'],['Claims per beneficiary (log)','0.0043','0.0207','0.0041','0.0189'],['Inpatient beneficiaries (log)','0.0025','0.0163','0.0026','0.0154'],['Outpatient reimbursement (log)','0.0115','0.0288','0.0109','0.0264'],['Deceased ratio','0.0041','0.0207','0.0038','0.0189'],['Female ratio','0.0096','0.0288','0.0088','0.0264']],
- spec='lrrrr', after='The age-mix effect stays significant after Holm correction when any of the seven alternatives is the control, and disappears only when panel size is. Joint model with all seven alternatives: extreme age-mix OR 0.475 [0.234, 0.965], $p=0.040$; adding panel size, 0.716 [0.250, 2.045], $p=0.532$. The adjusted age-mix estimate has standard error 0.300 on the log scale; the smallest odds ratio detectable at 80\\% power is 0.432. An equivalence test (TOST) against odds ratios of 0.5 and 2 gives $p=0.247$, so equivalence is not established.')
+ spec='lrrrr', after='The age-mix effect stays significant after Holm correction when any of the seven alternatives is the control, and disappears only when panel size is. Joint model with all seven alternatives: extreme age-mix OR 0.475 [0.234, 0.965], $p=0.040$; adding panel size, 0.716 [0.250, 2.045], $p=0.532$. The adjusted age-mix estimate has standard error 0.300 on the log scale; the smallest odds ratio detectable at 80\\% power is 0.432. An equivalence test (TOST) against odds ratios of 0.8 and 1.25 gives $p=0.247$, so equivalence is not established.')
 # S11
 tab(11, 'Sensitivity of the adjusted age effect to label-selection strength',
  'The analysis conditions on a positive fraud label. If the probability of receiving a label scales with panel size, conditioning on it can induce association among other causes. Each row reweights fraud-positive providers by an assumed selection probability proportional to $\\exp(-\\gamma z)$, with $z$ the standardized log panel size. Robust (sandwich) $p$-values.',
@@ -133,8 +133,8 @@ tab(11, 'Sensitivity of the adjusted age effect to label-selection strength',
 tab(12, 'External validation against the OIG exclusion list (LEIE)',
  'Providers in the 2021--2022 CMS file whose NPI appears in the OIG List of Excluded Individuals and Entities with an exclusion date after the claims window: 416 of 1,105,159. A gradient-boosting classifier flags the top 10\\% of providers by score; odds ratios compare the share flagged among excluded providers.',
  ['Quantity','Value'],
- [['Excluded providers recovered by the top-10\\% flag','24.8\\%'],['Extreme age-mix: OR for being flagged','1.26 [0.78, 2.05]'],['Adjusted for panel size','1.18 [0.72, 1.93]'],['Outer age deciles versus the rest','0.76 [0.47, 1.23]'],['Same model with mean age as an input: OR','4.03 [2.26, 7.18]'],['Same, adjusted','3.75 [2.10, 6.71]']],
- spec='lr', after='Where age is not an input to the detection model, no significant disparity by age-mix appears; where it is an input, one appears. The label itself depends on unit size, because large billers are investigated more often, so this check cannot separate detection bias from label bias.')
+ [['Excluded providers recovered by the top-10\\% flag','24.8\\%'],['Extreme age-mix: OR for being flagged','1.26 [0.78, 2.05]'],['Adjusted for panel size','1.18 [0.72, 1.93]'],['Outer age deciles versus the rest','0.76 [0.47, 1.23]'],['Same model with mean age as an input: OR','4.03 [2.26, 7.18]'],['Same, adjusted','3.75 [2.10, 6.71]'],'--','Second run of the script in a different software environment',['Recall of the top-10\\% flag','25.2\\%'],['Extreme age-mix: OR (unadjusted; adjusted)','1.16 [0.72, 1.87]; 1.08 [0.67, 1.76]'],['Outer age deciles: OR (unadjusted; adjusted)','0.73 [0.46, 1.19]; 0.64 [0.39, 1.05]'],['Mean age as an input: OR (unadjusted; adjusted)','4.54 [2.52, 8.19]; 4.24 [2.34, 7.68]'],['Size slope of the flag among excluded providers, per SD of log panel size','$-0.25$ [$-0.47$, $-0.03$], $p=0.026$']],
+ spec='lr', after='Where age is not an input to the detection model, no significant disparity by age-mix appears; where it is an input, one appears. The label itself depends on unit size, because large billers are investigated more often, so this check cannot separate detection bias from label bias. Gradient-boosting fits differ slightly between software environments, so the point estimates of the two runs differ; the conclusions do not.')
 # S13
 w('\\Needspace{14\\baselineskip}'); w('\\subsection*{Table S13. Errors-in-variables remedies in simulation}')
 w('1,000 replications. Median odds ratio and rejection rate (\\%) for the extreme age-mix partition. Null: no true effect. Planted: true odds ratio 0.70. RC = regression calibration with the Stage 0 reliability; oracle = true provider mean age.\n')
@@ -145,11 +145,11 @@ sub('Panel A. Remedies for the unadjusted partition',['$\\tau$','Truth','Method'
   ['1.65','Planted 0.70','Unadjusted (naive)','0.544','69.5'],['','','Size-adjusted','0.918','7.3'],['','','RC','0.967','4.7'],['','','RC + size','0.922','8.0'],['','','Oracle','0.738','23.5']],spec='llllr')
 sub('Panel B. Methods designed for noisy sensitive attributes (null truth)',['$\\tau$','Flip rate','Indep.\\ rejected \\%','Measured gap / sig.\\ \\%','Corrected gap','Recall before/after'],
  [['0.9','0.467','87.1','+0.111 [0.033, 0.190] / 81.9','+1.700','0.859 $\\to$ 0.777'],['1.65','0.417','60.6','+0.072 / 53.0','+0.427','0.859 $\\to$ 0.810'],['3.47','0.316','24.0','+0.029 / 15.3','+0.080','0.859 $\\to$ 0.838']],spec='lrrlrl')
-w('Flip rate = mean misclassification rate of the extreme-age label; Indep.\\ rejected = rejection rate of the conditional-independence test of the noisy-attribute method; recall before/after = recall with and without equalized-odds post-processing on the noisy groups.\n')
+w('Flip rate = mean misclassification rate of the extreme-age label; Indep.\\ rejected = rejection rate of the conditional-independence test of the noisy-attribute method; recall before/after = recall with and without equalized-odds post-processing on the noisy groups. Both constructions are simplified. The correction divides the measured recall gap by one minus the average flip rates, which are supplied from the simulation (an oracle advantage), and the post-processing lowers the detections of the higher-recall group at random until the recall rates match. The independence check is a logistic regression of detection on the true and the noisy group among labelled providers; it reports how often the coefficient of the noisy group is significant.\n')
 w('The true gap in these simulations is $-0.014$ at $\\tau=0.9$; post-processing removes the measured gap (0.111 to 0) at a cost in recall.\n')
 # S14
-def parse_m5():
-    t = (OUT / 'm5_summary.txt').read_text().split('\n'); blocks = {}; cur = None
+def parse_stage0_summary():
+    t = (OUT / 'cms_stage0_summary.txt').read_text().split('\n'); blocks = {}; cur = None
     for ln in t:
         m = re.match(r'\[fill (\S+)\] (\S+)', ln)
         if m: cur = (m.group(1), m.group(2)); blocks[cur] = {}; continue
@@ -158,7 +158,7 @@ def parse_m5():
             try: blocks[cur][parts[0]] = [float(x) for x in parts[1:5]]
             except ValueError: pass
     return blocks
-B = parse_m5()
+B = parse_stage0_summary()
 order = ['mean age','age <65','age 65-74','age 75-84','age >84','female','non-White (any)','Black','Asian/Pacific Is.','Hispanic','Native American','Other race','dual-eligible']
 supp = {'age <65':0.465,'age 65-74':0.174,'age 75-84':0.282,'age >84':0.474,'Black':0.692,'Asian/Pacific Is.':0.817,'Hispanic':0.753,'Native American':0.666,'Other race':0.808}
 w('\\Needspace{22\\baselineskip}'); w('\\subsection*{Table S14. Reliability of multiple aggregate attributes in CMS claims (Stage 0 sweep)}')
@@ -174,7 +174,7 @@ for fill, lab in (('5.5','midpoint fill (5.5)'),('0','zero fill')):
     w(r'Attribute & Supp.\ \% & 11--20 & 21--50 & 51--100 & 101+ & 11--20 & 21--50 & 51--100 & 101+ & 11--20 & 21--50 & 51--100 & 101+ \\ \midrule')
     for r in rows: w(' & '.join(r) + r' \\')
     w('\\bottomrule\\end{tabular}\\end{center}')
-tr = pd.read_csv(OUT / 'm5' / 'cms_stage0_testretest.csv')
+tr = pd.read_csv(OUT / 'cms_stage0' / 'cms_stage0_testretest.csv')
 rows = [[r.attribute] + [f'{r[c]:.3f}' for c in ['n 11-20','n 21-50','n 51-100','n 101+']] for _, r in tr.iterrows()]
 sub('Year-to-year (2021 to 2022) correlation of the provider value, by the smaller of the two years\' panel sizes',['Attribute','11--20','21--50','51--100','101+'], rows)
 w('Pooled across specialties (differences between specialties treated as true variance), median reliability is 0.84 to 0.99 across attributes and bands; this is the relevant figure only when an audit compares providers across specialties.\n')
@@ -200,6 +200,20 @@ tab(17, 'Empirical Bayes shrinkage of provider mean age',
  ['Quantity','Value'],
  ['Group composition',['SD of provider mean age, raw $\\to$ shrunken','4.55 $\\to$ 0.376'],['Providers that keep their extreme age-mix group','62.3\\%'],['Median panel size of the extreme group, raw $\\to$ shrunken','13 $\\to$ 45'],['Share of the extreme group in the top panel-size quartile','9.9\\% $\\to$ 37.7\\%'],['Fraud prevalence of the extreme group','4.8\\% $\\to$ 12.9\\%'],'--','Extreme age-mix association',['Raw attribute (class weighting)','unadj.\\ 0.477, adj.\\ 1.018'],['Shrunken attribute, detection model fixed','unadj.\\ 2.262 [1.362, 3.758] ($p=0.0016$); adj.\\ 1.127 [0.628, 2.023] ($p=0.688$)'],['Shrunken attribute, model refit on shrunken age','unadj.\\ 1.447 [0.828, 2.530] ($p=0.194$); adj.\\ 0.807 [0.429, 1.518] ($p=0.507$)'],['Shrunken attribute, pooled SMOTE','unadj.\\ 2.348 [1.417, 3.889] ($p=0.0009$); adj.\\ 1.141 [0.636, 2.046] ($p=0.658$)']],
  spec='lp{7.4cm}', after='Sweep over the assumed $\\tau^2$ with the detection model fixed (unadjusted odds ratio): 0.247 gives 2.685 ($p=0.0002$); 0.812 gives 2.262; 0.948 (upper profile limit) gives 2.092 ($p=0.0043$); 1.97 gives 1.686 ($p=0.0415$). Shrinkage inverts the group composition: the extreme group becomes the larger, higher-prevalence providers, so the sign of the unadjusted association flips, and no adjusted estimate differs from one.')
+# S18
+ex = pd.read_csv(OUT / 'cms_exposure.csv'); ex['g'] = ex.gamma1.round(3)
+nm = {'All providers (pooled)':'All providers (pooled)','Certified Registered Nurse Anesthetist (CRNA)':'CRNA','Physical Therapist in Private Practice':'Physical therapist'}
+grid = [0.25, 0.5, 0.901, 1.213]
+w('\\Needspace{16\\baselineskip}'); w('\\subsection*{Table S18. Exposure to a spurious age disparity by size--detection slope}')
+w('Percentage of audits reporting a significant spurious age disparity when the true age effect is zero, by specialty, for audits of $m$ fraud-labelled providers (asymptotic Wald test). Panel sizes, $\\sigma_w$ and $\\tau$ come from CMS 2021--2022; the size--label slope (1.398) and the mean detection rate (0.88) come from the primary dataset, because CMS carries no fraud labels. The columns vary the size--detection slope in the model of the audited detector, in units of log odds per SD of log panel size (1.213 is the primary-dataset value; the slope estimated from real exclusion labels is $-0.25$, Table S12).\n')
+sub('Panel A. Audits of 10,000 fraud-labelled providers',['Group','$\\tau$']+[f'slope {g}' for g in grid],
+    [[nm.get(r.group,r.group), f'{r.tau:.2f}'] + [f'{ex[(ex.group==r.group)&(ex.g==g)&(ex.m==10000)].sig_rate.iloc[0]:.1f}' for g in grid] for _, r in ex[(ex.g==0.25)&(ex.m==10000)].iterrows()])
+rows=[]
+for grp in ['All providers (pooled)','Certified Registered Nurse Anesthetist (CRNA)']:
+    for m in [500,2000,10000,100000]:
+        rows.append([nm.get(grp,grp), f'{m:,}'] + [f'{ex[(ex.group==grp)&(ex.g==g)&(ex.m==m)].sig_rate.iloc[0]:.1f}' for g in grid])
+sub('Panel B. Audit size, for all providers and for the most homogeneous specialty',['Group','$m$']+[f'slope {g}' for g in grid], rows)
+w('The rate exceeds the nominal 5\\% only in large audits, and for small slopes only in homogeneous specialties.\n')
 w('\\end{document}')
 D.mkdir(parents=True, exist_ok=True)
 (D / 'supplement.tex').write_text('\n'.join(out))

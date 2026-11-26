@@ -1,7 +1,7 @@
 """
 [02] 전체 실험 실행 -> Table 1, Table 2, 검증 결과 출력
 실행: python3 02_experiments.py
-입력: provider_features_FINAL.csv
+입력: provider_features.csv
 출력: Table1_model_performance.csv, Table2_confounding_analysis.csv
 
 필요 패키지: pandas numpy scikit-learn xgboost imbalanced-learn fairlearn statsmodels
@@ -26,7 +26,7 @@ from sklearn.metrics import (f1_score, recall_score, precision_score,
 from fairlearn.reductions import ExponentiatedGradient, EqualizedOdds
 from fairlearn.metrics import demographic_parity_difference, equalized_odds_difference
 
-pf = pd.read_csv(DATA / "provider_features_FINAL.csv")
+pf = pd.read_csv(DATA / "provider_features.csv")
 
 # 다중공선성 제거 후 최종 13개 피처
 # (원래 18개였으나 IP_ClaimCount/IP_TotalReimbursed/OP_ClaimCount 등이

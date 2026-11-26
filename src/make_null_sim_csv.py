@@ -6,7 +6,7 @@ OUT = ROOT / 'output'; OUT.mkdir(exist_ok=True)
 
 """
 Per-replicate results of the null simulation (true age effect zero, true between-provider SD 0.50, 5,000 replicates, seed 20260910)
--> data/null_sim_5000reps.csv, the input of src/simfig.py (Fig. 4).  Same generating process and random-number sequence as
+-> data/null_sim_5000reps.csv, the input of src/make_fig_null.py (Fig. 3).  Same generating process and random-number sequence as
 null_sim.run(); columns: n = fraud-positive providers in the replicate, uOR/up = unadjusted odds ratio and p,
 aOR/ap = panel-size-adjusted odds ratio and p.
 """

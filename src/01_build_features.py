@@ -1,7 +1,7 @@
 """
 [01] 원본 Kaggle CSV -> Provider 단위 피처 테이블 생성
 실행: python3 01_build_features.py
-출력: provider_features_FINAL.csv
+출력: provider_features.csv
 
 RAW_DIR 경로만 본인 환경에 맞게 수정하면 됨.
 검증 완료: 5410 providers, 506 fraud(9.35%), 결측 0건
@@ -111,5 +111,5 @@ print(f"검증 통과: {pf.shape[0]} providers, {pf['Fraud'].sum()} fraud "
       f"({pf['Fraud'].mean():.4f}), 결측 {pf.isna().sum().sum()}건")
 print(f"fold별 사기율: {pf.groupby('fold')['Fraud'].mean().round(4).tolist()}")
 
-pf.to_csv(DATA / "provider_features_FINAL.csv", index=False)
-print("저장 완료: provider_features_FINAL.csv")
+pf.to_csv(DATA / "provider_features.csv", index=False)
+print("저장 완료: provider_features.csv")

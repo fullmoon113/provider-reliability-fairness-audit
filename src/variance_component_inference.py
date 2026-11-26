@@ -1,6 +1,6 @@
 from pathlib import Path
 HERE = Path(__file__).resolve().parent; ROOT = HERE.parent; OUT = ROOT / 'output'
-"""Boundary-aware inference for the true between-provider variance tau^2 of provider mean patient age (work order M7).
+"""Boundary-aware inference for the true between-provider variance tau^2 of provider mean patient age.
 Model: A_i = mu + a_i + e_i, a_i ~ N(0, tau^2), e_i ~ N(0, sigma_w^2 / n_i) with sigma_w known (12.7275 years, from the individual ages).
 Because the within-provider variance is known, this is the random-effects model for provider means; REML and likelihood
 inference are computed directly.  Reported: Cochran's Q test of tau^2 = 0, REML estimate, profile-likelihood interval truncated at

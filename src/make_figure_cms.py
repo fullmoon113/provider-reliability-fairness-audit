@@ -25,28 +25,30 @@ A=ax[0]
 A.bar(x-w/2,[s1[l] for l in LAB],w,label='2018 \u2192 2019  (pre-pandemic)',color='#4c72b0',edgecolor='black',lw=1)
 A.bar(x+w/2,[s2[l] for l in LAB],w,label='2021 \u2192 2022',color='#c44e52',edgecolor='black',lw=1)
 A.set_xticks(x); A.set_xticklabels(LAB,rotation=18)
-A.set_xlabel('Claim volume (unique beneficiaries)',fontweight='bold')
+A.set_xlabel('Panel size (unique beneficiaries)',fontweight='bold')
 A.set_ylabel('SD of year-over-year change\nin mean patient age (years)',fontweight='bold')
-A.set_title('(a) Instability falls fivefold with size,\nidentically in two independent periods',fontweight='bold')
+A.set_title('(a)',loc='left',fontweight='bold')
 A.legend(); A.grid(axis='y',alpha=.3)
 for i,l in enumerate(LAB):
-    A.text(i-w/2,s1[l]+.07,'%.2f'%s1[l],ha='center',fontsize=10.5)
-    A.text(i+w/2,s2[l]+.07,'%.2f'%s2[l],ha='center',fontsize=10.5)
-SP=['Nurse Practitioner','Internal Medicine','Family Practice','Physician Assistant',
+    A.text(i-w/2,s1[l]+.07,'%.2f'%s1[l],ha='center',va='bottom',rotation=90,fontsize=10.5)
+    A.text(i+w/2,s2[l]+.07,'%.2f'%s2[l],ha='center',va='bottom',rotation=90,fontsize=10.5)
+A.set_ylim(0,max(s1.max(),s2.max())*1.22)
+SP=['Nurse Practitioner','Internal Medicine','Physical Therapist in Private Practice','Family Practice','Physician Assistant',
     'Emergency Medicine','Anesthesiology','Certified Registered Nurse Anesthetist (CRNA)']
-SH=['Nurse Pract.','Internal Med.','Family Pract.','Phys. Asst.','Emerg. Med.','Anesthesiol.','CRNA']
+SH=['Nurse practitioner','Internal medicine','Physical therapist','Family practice','Physician assistant','Emergency medicine','Anesthesiology','CRNA']
 lo=[];hi=[]
 for t in SP:
     s=b[b.Rndrng_Prvdr_Type_22==t]; v=s[['v1','v2']].min(1)
     l=s[v<=v.quantile(.25)]; h=s[v>=v.quantile(.75)]
     lo.append(np.corrcoef(l.age1,l.age2)[0,1]); hi.append(np.corrcoef(h.age1,h.age2)[0,1])
 B=ax[1]; y=np.arange(len(SP))
-B.barh(y-w/2,lo,w,label='Low claim volume (bottom quartile)',color='#c44e52',edgecolor='black',lw=1)
-B.barh(y+w/2,hi,w,label='High claim volume (top quartile)',color='#4c72b0',edgecolor='black',lw=1)
+B.barh(y-w/2,lo,w,label='Smallest panels (bottom quartile)',color='#c44e52',edgecolor='black',lw=1)
+B.barh(y+w/2,hi,w,label='Largest panels (top quartile)',color='#4c72b0',edgecolor='black',lw=1)
 B.set_yticks(y); B.set_yticklabels(SH,fontsize=12); B.set_ylim(len(SP)-0.5,-0.5)
-B.set_xlabel('Year-over-year correlation of mean patient age',fontweight='bold')
+B.set_xlabel('Year-over-year correlation of mean patient age, 2021\u20132022',fontweight='bold')
 B.set_xlim(0,1.02)
-B.set_title('(b) The gradient holds within\nevery specialty examined',fontweight='bold')
+B.set_title('(b)',loc='left',fontweight='bold')
 B.legend(loc='upper center', bbox_to_anchor=(0.5,-0.13), ncol=2, frameon=False); B.grid(axis='x',alpha=.3)
-plt.tight_layout(); plt.savefig(str(OUT/'Fig6_cms.png'),bbox_inches='tight')
+plt.tight_layout(); plt.savefig(str(OUT/'fig4.png'),bbox_inches='tight')
+print(dict(zip(SH,[round(x,3) for x in lo])),dict(zip(SH,[round(x,3) for x in hi])))
 print('saved')

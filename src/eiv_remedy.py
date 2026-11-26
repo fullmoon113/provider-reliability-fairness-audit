@@ -5,7 +5,7 @@ DATA = ROOT / 'data'
 OUT = ROOT / 'output'; OUT.mkdir(exist_ok=True)
 
 """
-Errors-in-variables remedy for the disparity regression (reviewer item D-2).
+Errors-in-variables remedy for the disparity regression .
 
 Question: once the partition attribute is known to be an unreliable aggregate, does a standard measurement-error
 correction (regression calibration) remove the manufactured disparity, and does it keep a real one?

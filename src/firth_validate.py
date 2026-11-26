@@ -12,7 +12,7 @@ from imblearn.over_sampling import SMOTE
 sys.path.insert(0,str(HERE))
 from firth import fit_firth, firth_plr_test, firth_penalized_loglik
 
-pf = pd.read_csv(str(DATA/'provider_features_FINAL.csv'))
+pf = pd.read_csv(str(DATA/'provider_features.csv'))
 F13 = ['IP_UniqueBene','IP_AvgReimbursed','IP_AvgLOS','IP_AvgDiagCodes','IP_UniqueAttPhysician',
  'OP_AvgReimbursed','OP_AvgDiagCodes','OP_UniqueAttPhysician','TotalUniqueBene',
  'FemaleRatio','AvgChronicCondCount','DeceasedRatio','ClaimsPerBene']
