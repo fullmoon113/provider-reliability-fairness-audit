@@ -54,12 +54,12 @@ def sweep(oof):
         out[st2]=(np.exp(rr.params[1]), rr.pvalues[1])
     return out
 
-PIPES=[('논문본(13F+층화SMOTE)',F13,'smote_strat'),
-       ('13F + 일반SMOTE',F13,'smote_plain'),
+PIPES=[('paper (13 features, group-wise SMOTE)',F13,'smote_strat'),
+       ('13 features, plain SMOTE',F13,'smote_plain'),
        ('13F + class_weight',F13,'cw'),
-       ('17F + 층화SMOTE',F17,'smote_strat'),
+       ('17 features, group-wise SMOTE',F17,'smote_strat'),
        ('17F + class_weight',F17,'cw')]
-print(f"{'파이프라인':24s} {'미보정OR':>9s} | " + " | ".join(f"σ²={s:<5}" for s in ['0.247','0.5','1.0','1.97']))
+print(f"{'pipeline':24s} {'unadj. OR':>9s} | " + " | ".join(f"σ²={s:<5}" for s in ['0.247','0.5','1.0','1.97']))
 print("-"*94)
 for lbl,fs,md in PIPES:
     o=sweep(fit_oof(fs,md))

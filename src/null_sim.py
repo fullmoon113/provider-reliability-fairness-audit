@@ -58,16 +58,16 @@ def run(sd_true, reps, seed, det_mult=1.0):
                 or_a=o.or_a.median(), fpr_a=(o.p_a < .05).mean() * 100)
 
 if __name__ == '__main__':
-    print("=== 재현 검증: 논문 Table 6 (sd_true=0.50, 500회) ===")
-    print("   논문값: 미보정 OR 0.437 [0.248, 0.747], 유의 78.2% | 보정 OR 0.980, 유의 4.0%")
+    print("=== Reproduction check (sd_true=0.50, 500 replicates) ===")
+    print("   reference: unadjusted OR 0.437 [0.248, 0.747], significant 78.2% | adjusted OR 0.980, significant 4.0%")
     r = run(0.50, 500, 42)
-    print(f"   재현본: 미보정 OR {r['or_u']:.3f} [{r['lo']:.3f}, {r['hi']:.3f}], "
-          f"유의 {r['fpr_u']:.1f}% | 보정 OR {r['or_a']:.3f}, 유의 {r['fpr_a']:.1f}%  (n={r['reps']})")
+    print(f"   this run: unadjusted OR {r['or_u']:.3f} [{r['lo']:.3f}, {r['hi']:.3f}], "
+          f"significant {r['fpr_u']:.1f}% | adjusted OR {r['or_a']:.3f}, significant {r['fpr_a']:.1f}%  (n={r['reps']})")
 
-    print("\n=== Table A7 Panel A 재현 (250회) ===")
+    print("\n=== Null simulation by true SD (250 replicates) ===")
     for sd in [0.0, 0.5, 1.0, 2.0, 4.0, 6.0]:
         r = run(sd, 250, 7)
-        print(f"   sd_true={sd:4.1f}  미보정 위양성 {r['fpr_u']:5.1f}%   보정 {r['fpr_a']:4.1f}%")
+        print(f"   sd_true={sd:4.1f}  unadjusted false positives {r['fpr_u']:5.1f}%   adjusted {r['fpr_a']:4.1f}%")
 
 # ---------------------------------------------------------------- CMS scenarios
 def run_with_n(nvec, sd_true, reps, seed):

@@ -15,7 +15,7 @@ n = pf.TotalUniqueBene.values.astype(float); logn_all = np.log1p(n); logn = logn
 age = pf.AvgPatientAge.values; ext = pf.IsExtremeAge.values
 oof = oof_lr(pf, ext, strategy='class_weight'); det = oof[fm]
 q = np.quantile(age, [.25, .5, .75]); qi = np.digitize(age, q[:3], right=True)   # 0..3 (quartile index)
-P('== Quartile detection (fraud-labelled)')
+P('== Quartile detection (fraud-labeled)')
 for k in range(4):
     m = fm & (qi == k)
     P(f'Q{k+1}: n_fraud={m.sum()} det={oof[m].mean():.3f} median panel (fraud) {np.median(n[m]):.0f}; median panel (all) {np.median(n[qi==k]):.0f}')
@@ -25,7 +25,7 @@ P('Q1 vs Q4 diff', oof[a].mean()-oof[b].mean(), 'Fisher p', stats.fisher_exact(t
 d = oof[a].mean()-oof[b].mean(); se = np.sqrt(oof[a].mean()*(1-oof[a].mean())/a.sum()+oof[b].mean()*(1-oof[b].mean())/b.sum())
 P('  95% CI', d-1.96*se, d+1.96*se)
 mid = fm & ((qi == 1) | (qi == 2))
-P('median panel size, fraud-labelled: middle quartiles pooled', np.median(n[mid]), ' outer', np.median(n[fm & (ext == 1)]))
+P('median panel size, fraud-labeled: middle quartiles pooled', np.median(n[mid]), ' outer', np.median(n[fm & (ext == 1)]))
 P('all providers: ext median', np.median(n[ext == 1]), 'mid', np.median(n[ext == 0]))
 t, p = stats.ttest_ind(logn_all[ext == 1], logn_all[ext == 0], equal_var=True); P('t on log panel size', t, p)
 

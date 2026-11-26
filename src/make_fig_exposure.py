@@ -24,7 +24,7 @@ short = {'All providers (pooled)': 'All providers', SPEC[0]: 'CRNA', SPEC[1]: 'A
 for name, o in rows:
     c, ls, lw = sty[name]; ax.plot(ms, [100*sig_rate(*o, m) for m in ms], color=c, ls=ls, lw=lw, label=short[name])
 ax.axhline(5, color='grey', lw=.8); ax.set_xscale('log'); ax.set_ylim(0, 102)
-ax.set_xlabel('Fraud-labelled providers audited, $m$'); ax.set_ylabel('Significant disparity under the null (%)')
+ax.set_xlabel('Fraud-labeled providers audited, $m$'); ax.set_ylabel('Significant disparity under the null (%)')
 ax.legend(fontsize=6.5, frameon=False, loc='upper left', ncol=1, handlelength=2.2)
 plt.tight_layout(); plt.savefig(OUT / 'fig5.png', dpi=300, bbox_inches='tight')
 print([(n_, round(np.exp(o[0]), 3)) for n_, o in rows])

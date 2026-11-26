@@ -13,8 +13,10 @@ known, so the methods can be scored against the truth.
 (1) Assumption check.  Awasthi et al.'s guarantee needs the noisy group G^ to be conditionally independent of the
     prediction given the label and the true group.  We test this with a logistic model D ~ G* + G^ among fraud-positive
     providers and report how often G^ is significant.
-(2) Noise-corrected disparity.  Dividing the measured recall gap by (1 - g0 - g1), with the AVERAGE (oracle) flip rates,
-    is the standard correction.  We report the corrected gap and its rejection rate against a true gap of zero.
+(2) Noise-corrected disparity.  The mutual-contamination correction of Lamy et al. (2019) divides the measured recall gap by
+    1 - g0 - g1, the sum of the two flip rates of the noisy label (rates supplied from the simulation, an oracle advantage).  We
+    report the correction with the rates of all providers and with the rates of the fraud-labeled providers (the units over which
+    recall is computed), and, as a control, with noise of the same rates that is independent of panel size.
 (3) Equalized-odds style post-processing on the noisy groups (lower the higher-recall group's detections at random until the
     recall rates match).  We report the measured-group, true-group and panel-size-tercile recall before and after.
 """
@@ -58,6 +60,15 @@ for _ in range(R):
     gap_true = rec(gs == 0) - rec(gs == 1)
     se = np.sqrt(rec(gh == 0) * (1 - rec(gh == 0)) / max((gh == 0).sum(), 1) + rec(gh == 1) * (1 - rec(gh == 1)) / max((gh == 1).sum(), 1))
     k = 1 - g0 - g1
+    lab = fraud
+    g0L = ((Gh == 1) & (Gs == 0) & lab).sum() / max(((Gs == 0) & lab).sum(), 1)
+    g1L = ((Gh == 0) & (Gs == 1) & lab).sum() / max(((Gs == 1) & lab).sum(), 1)
+    kL = 1 - g0L - g1L
+    # control: noise with the same flip rates as the size-driven noise, but independent of panel size
+    flip = rng.random(len(n))
+    Gi = np.where(Gs == 0, (flip < g0).astype(float), 1 - (flip < g1).astype(float)); gi = Gi[f]
+    gap_i = rec(gi == 0) - rec(gi == 1)
+    se_i = np.sqrt(rec(gi == 0) * (1 - rec(gi == 0)) / max((gi == 0).sum(), 1) + rec(gi == 1) * (1 - rec(gi == 1)) / max((gi == 1).sum(), 1))
     z_m = gap_m / se
     # (3) post-processing on noisy groups: lower the higher-recall group's detections to the lower recall
     d_pp = d.copy()
@@ -69,7 +80,8 @@ for _ in range(R):
     rec_pp = lambda m: d_pp[m].mean()
     rows.append(dict(
         g0=g0, g1=g1, p_ci=p_ci,
-        gap_meas=gap_m, gap_corr=gap_m / k, gap_true=gap_true, sig_meas=abs(z_m) > 1.96,
+        gap_meas=gap_m, gap_corr=gap_m / k, gap_corr_lab=gap_m / kL if abs(kL) > 1e-3 else np.nan, divisor=k, divisor_lab=kL, g0L=g0L, g1L=g1L,
+        gap_true=gap_true, sig_meas=abs(z_m) > 1.96, gap_ind=gap_i, gap_ind_corr=gap_i / k, sig_ind=abs(gap_i / se_i) > 1.96,
         pp_gap_meas=rec_pp(gh == 0) - rec_pp(gh == 1), pp_gap_true=rec_pp(gs == 0) - rec_pp(gs == 1),
         rec_all=d.mean(), rec_all_pp=d_pp.mean(),
         **{f'rec_t{i}': (d[t == i].mean() if (t == i).any() else np.nan) for i in range(3)},
@@ -83,7 +95,11 @@ print(f"(2) recall gap, mid minus extreme (median [2.5%, 97.5%]):")
 print(f"      true groups G*       {o.gap_true.median():+.3f} [{o.gap_true.quantile(.025):+.3f}, {o.gap_true.quantile(.975):+.3f}]")
 print(f"      measured groups G^   {o.gap_meas.median():+.3f} [{o.gap_meas.quantile(.025):+.3f}, {o.gap_meas.quantile(.975):+.3f}]   significant in {o.sig_meas.mean()*100:.1f}%")
 print(f"      noise-corrected      {o.gap_corr.median():+.3f} [{o.gap_corr.quantile(.025):+.3f}, {o.gap_corr.quantile(.975):+.3f}]   (same z, so same rejection rate)")
-print(f"(3) equalized-odds post-processing on G^:")
+print(f"      true gap, mean {o.gap_true.mean():+.4f} (Monte Carlo SE {o.gap_true.std()/np.sqrt(len(o)):.4f}); mean divisor 1 - g0 - g1 = {o.divisor.mean():.3f} (all providers), {o.divisor_lab.mean():.3f} (fraud-labeled)")
+print(f"      flip rates among fraud-labeled providers: P(G^=1|G*=0) = {o.g0L.mean():.3f}, P(G^=0|G*=1) = {o.g1L.mean():.3f}; label-level error rate {((o.g0L + o.g1L)/2).mean():.3f}")
+print(f"      correction with all-provider rates: {o.gap_corr.median():+.3f}; with fraud-labeled rates: {o.gap_corr_lab.median():+.3f} [{o.gap_corr_lab.quantile(.025):+.3f}, {o.gap_corr_lab.quantile(.975):+.3f}]")
+print(f"      control, same flip rates independent of panel size: measured gap {o.gap_ind.median():+.3f} (significant in {o.sig_ind.mean()*100:.1f}%), corrected {o.gap_ind_corr.median():+.3f}")
+print(f"(3) equal-opportunity post-processing on G^:")
 print(f"      measured-group gap   {o.gap_meas.median():+.3f} -> {o.pp_gap_meas.median():+.3f}")
 print(f"      true-group gap       {o.gap_true.median():+.3f} -> {o.pp_gap_true.median():+.3f}")
 print(f"      overall recall       {o.rec_all.mean():.3f} -> {o.rec_all_pp.mean():.3f}")

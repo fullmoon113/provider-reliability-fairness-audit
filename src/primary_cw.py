@@ -4,7 +4,7 @@ ROOT = HERE.parent
 OUT = ROOT / 'output'; OUT.mkdir(exist_ok=True)
 
 """
-Primary specification with class weighting (decision D1): regenerates the numbers of Tables 1, 3, 4, 6, the
+Primary specification with class weighting: regenerates the numbers of Tables 1, 3, 4, 6, the
 false-positive audit, the fairness-mitigation paragraph and Table 8 with the detection model trained WITHOUT resampling
 (class_weight='balanced'), so that the model does not depend on any partition.  Group-wise SMOTE results are kept
 as a sensitivity analysis (src/02_experiments.py, src/refit_sweep.py).

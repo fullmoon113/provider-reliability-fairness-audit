@@ -33,9 +33,9 @@ def run(mode,seed):
     fm=y==1
     r=sm.Logit(o[fm],sm.add_constant(sens[fm].astype(float))).fit(disp=0)
     return np.exp(r.params[1]), r.pvalues[1]
-print("기본 결과(미보정 OR)의 리샘플링·시드 민감도\n")
-print(f"{'방식':22s} " + " ".join(f"seed{s:<8}" for s in [42,1,7,123,2024]))
-for mode,lbl in [('strat','층화 SMOTE (논문)'),('plain','일반 SMOTE'),('cw','class_weight')]:
+print("Sensitivity of the unadjusted OR to the resampling method and the seed\n")
+print(f"{'method':22s} " + " ".join(f"seed{s:<8}" for s in [42,1,7,123,2024]))
+for mode,lbl in [('strat','group-wise SMOTE'),('plain','plain SMOTE'),('cw','class_weight')]:
     cells=[]
     for s in [42,1,7,123,2024]:
         o,p=run(mode,s); cells.append(f"{o:.3f}{'*' if p<.05 else ' '}")

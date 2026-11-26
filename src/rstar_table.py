@@ -36,6 +36,6 @@ v = 12.7275 ** 2 / n
 for t2 in (0.812,):
     R = t2 / (t2 + v)
     P(f'\nprimary dataset (tau^2 = {t2}): expected misclassification, outer split: all providers {np.interp(R, Rg, m["outer"]).mean()*100:.1f}%, '
-      f'fraud-labelled {np.interp(R[fm], Rg, m["outer"]).mean()*100:.1f}%;  top-quartile split {np.interp(R, Rg, m["top"]).mean()*100:.1f}%; '
+      f'fraud-labeled {np.interp(R[fm], Rg, m["outer"]).mean()*100:.1f}%;  top-quartile split {np.interp(R, Rg, m["top"]).mean()*100:.1f}%; '
       f'share with R >= R*(10%) = {(R >= Rg[np.argmax(m["outer"] <= .10)]).mean()*100:.2f}%')
 (OUT / 'rstar_table_output.txt').write_text(buf.getvalue())

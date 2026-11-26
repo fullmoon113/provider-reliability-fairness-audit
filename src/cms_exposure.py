@@ -6,7 +6,7 @@ For each of the eight largest CMS specialties (and all providers pooled) the scr
 from the 2021 -> 2022 panel (no individual ages), and applies Proposition 1 to obtain the expected odds ratio of an
 outer-quartile audit under a null (no age effect), for a grid of detection-on-size slopes gamma1.  The fraud-incidence slope
 (1.398) and the mean detection rate (0.88) are the primary-dataset values: CMS carries no fraud labels.
-It then converts the bias into the expected rate of significant disparities for audits of m fraud-labelled providers
+It then converts the bias into the expected rate of significant disparities for audits of m fraud-labeled providers
 (asymptotic Wald test on the log odds ratio, checked by Monte Carlo at m = 500 and 2,000).
 Usage: python src/cms_exposure.py        (SIM_REPS=1000 for the Monte Carlo check)
 """
@@ -37,7 +37,7 @@ def decompose(g):
 def prop1(n, tau, sw, mu, g1, part='outer', g0=None, F1=1.398, target_det=0.858):
     z = (np.log1p(n) - np.log1p(n).mean()) / np.log1p(n).std(ddof=1)
     s = np.sqrt(tau ** 2 + sw ** 2 / n)
-    # panel-size weights of fraud-labelled units: incidence logistic(F0 + F1 z) with mean 9.35%
+    # panel-size weights of fraud-labeled units: incidence logistic(F0 + F1 z) with mean 9.35%
     F0 = brentq(lambda a: logistic(a + F1 * z).mean() - 0.0935, -15, 5)
     w = logistic(F0 + F1 * z); w = w / w.sum()
     G0 = brentq(lambda a: (w * logistic(a + g1 * z)).sum() - target_det, -15, 15)
@@ -59,7 +59,7 @@ def mc_rate(n, tau, sw, mu, g1, m, reps, rng, F1=1.398, target_det=0.858):
     F0 = brentq(lambda a: logistic(a + F1 * z).mean() - 0.0935, -15, 5)
     w = logistic(F0 + F1 * z); wn = w / w.sum()
     G0 = brentq(lambda a: (wn * logistic(a + g1 * z)).sum() - target_det, -15, 15)
-    # an audit population of N providers whose expected number of fraud-labelled units is m
+    # an audit population of N providers whose expected number of fraud-labeled units is m
     N = int(round(m / 0.0935)); hits = 0; tot = 0; ors = []
     for _ in range(reps):
         idx = rng.integers(0, len(n), N)
@@ -90,7 +90,7 @@ for name, g in groups:
             rows.append(dict(group=name, gamma1=g1, m=m, n_providers=len(g), tau=tau, sigma_w=sw, median_R=np.median(R),
                              expected_OR=np.exp(res[g1][0]), sig_rate=sig_rate(*res[g1], m) * 100))
 t = pd.DataFrame(rows); t.to_csv(OUT / 'cms_exposure.csv', index=False)
-emit("\nExpected significant-disparity rate (%) of the unadjusted audit under the null, nominal 5%, by number of fraud-labelled audited providers m")
+emit("\nExpected significant-disparity rate (%) of the unadjusted audit under the null, nominal 5%, by number of fraud-labeled audited providers m")
 for g1 in GRID:
     emit(f"\n-- detection slope gamma1 = {g1} per SD of log panel size")
     p = t[t.gamma1 == g1].pivot(index='group', columns='m', values='sig_rate').round(1)

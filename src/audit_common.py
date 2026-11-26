@@ -1,6 +1,6 @@
 """Shared helpers for the extended analyses (Prop. 1 check, ablation, permutation null, power study).
 Reproduces the reference audit of the paper: logistic regression, out-of-fold predictions, detection among
-fraud-labelled providers, extreme-age partition (outer quartiles) with and without log panel size."""
+fraud-labeled providers, extreme-age partition (outer quartiles) with and without log panel size."""
 from pathlib import Path
 import numpy as np, pandas as pd, statsmodels.api as sm, warnings
 from sklearn.linear_model import LogisticRegression
@@ -81,5 +81,5 @@ def logit_or(d, cols):
         return np.nan, np.nan, np.nan, np.nan
 
 def audit(det, g, logn):
-    """Unadjusted and panel-size-adjusted odds ratio of detection for group indicator g (fraud-labelled providers)."""
+    """Unadjusted and panel-size-adjusted odds ratio of detection for group indicator g (fraud-labeled providers)."""
     return logit_or(det, [g]), logit_or(det, [g, logn])

@@ -3,7 +3,7 @@ Ablation: remove the features that carry panel size and refit (paper limitation 
 Feature sets: full (13 features) | no direct size (drops IP_UniqueBene, TotalUniqueBene, ClaimsPerBene)
               | no size-related (also drops the two attending-physician counts).
 Models: logistic regression, random forest, XGBoost; training: group-wise SMOTE (primary) and class weighting.
-Reports, among fraud-labelled providers: detection rate, slope of detection on log panel size (gamma1, per SD of log size),
+Reports, among fraud-labeled providers: detection rate, slope of detection on log panel size (gamma1, per SD of log size),
 extreme-age odds ratio unadjusted and adjusted for log panel size.
 Usage: python src/ablation_size_features.py
 """

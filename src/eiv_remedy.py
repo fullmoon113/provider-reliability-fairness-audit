@@ -51,7 +51,7 @@ def logit_or(d, cols):
         return np.nan, np.nan
 
 def run(sd_true, effect, rng):
-    rows = []
+    rows = []; s2_log = []
     p_d0 = ns.B_DET[0] + ns.B_DET[1] * z
     for _ in range(R):
         Astar = ns.MU_AGE + rng.normal(0, sd_true, len(n))
@@ -61,14 +61,17 @@ def run(sd_true, effect, rng):
         fraud = rng.random(len(n)) < p_f
         det = (rng.random(len(n)) < p_d)
         if fraud.sum() < 40 or det[fraud].sum() in (0, fraud.sum()): continue
-        # moment estimate of sigma^2_true and reliability (Eq. decomp / rel)
-        s2 = max(A.var(ddof=1) - v_i.mean(), 1e-3)
-        mu = np.average(A, weights=1 / (s2 + v_i))
-        Rel = s2 / (s2 + v_i)
-        Ahat = Rel * A + (1 - Rel) * mu
-        sd_post = np.sqrt(Rel * v_i)
-        lo, hi = mu + norm.ppf(.25) * np.sqrt(s2), mu + norm.ppf(.75) * np.sqrt(s2)  # outer-quartile cuts of the TRUE age
-        P = norm.cdf((lo - Ahat) / sd_post) + 1 - norm.cdf((hi - Ahat) / sd_post)
+        # precision-weighted (DerSimonian-Laird) estimate of sigma^2_true, and the unweighted moment estimate for comparison
+        w_ = 1 / v_i; Q = (w_ * (A - (w_ * A).sum() / w_.sum()) ** 2).sum()
+        s2_dl = max((Q - (len(A) - 1)) / (w_.sum() - (w_ ** 2).sum() / w_.sum()), 1e-3)
+        s2_mom = max(A.var(ddof=1) - v_i.mean(), 1e-3)
+        def post_prob(s2):
+            mu = np.average(A, weights=1 / (s2 + v_i)); Rel = s2 / (s2 + v_i)
+            Ahat = Rel * A + (1 - Rel) * mu; sd_post = np.sqrt(Rel * v_i)
+            lo, hi = mu + norm.ppf(.25) * np.sqrt(s2), mu + norm.ppf(.75) * np.sqrt(s2)  # outer-quartile cuts of the TRUE age
+            return norm.cdf((lo - Ahat) / sd_post) + 1 - norm.cdf((hi - Ahat) / sd_post)
+        P = post_prob(s2_dl); Pm = post_prob(s2_mom)
+        s2_log.append((s2_dl, s2_mom))
         f = fraud; d = det[f].astype(float); lg = logn[f]
         if Gobs[f].sum() < 5 or Gobs[f].sum() > f.sum() - 5: continue
         res = {}
@@ -77,22 +80,26 @@ def run(sd_true, effect, rng):
         Pz = (P[f] - P[f].mean()) / max(P[f].std(), 1e-12)   # per-SD scale: the raw coefficient explodes when P barely varies
         res['RC'] = logit_or(d, [Pz])
         res['RC + size'] = logit_or(d, [Pz, lg])
+        Pmz = (Pm[f] - Pm[f].mean()) / max(Pm[f].std(), 1e-12)
+        res['RC, moment tau2'] = logit_or(d, [Pmz])
+        res['RC + size, moment tau2'] = logit_or(d, [Pmz, lg])
         res['oracle'] = logit_or(d, [Gs[f]])
         rows.append({f'{k}_or': v[0] for k, v in res.items()} | {f'{k}_p': v[1] for k, v in res.items()})
-    return pd.DataFrame(rows)
+    out = pd.DataFrame(rows); out.attrs['s2'] = np.array(s2_log); return out
 
 lines = []
 def emit(s=''):
     print(s); lines.append(s)
 
 rng = np.random.default_rng(SEED)
-methods = ['naive', 'adj. size', 'RC', 'RC + size', 'oracle']
+methods = ['naive', 'adj. size', 'RC', 'RC + size', 'RC, moment tau2', 'RC + size, moment tau2', 'oracle']
 for sd_true in (0.90, 1.65):
     for effect in (False, True):
         o = run(sd_true, effect, rng)
         emit(f"\n=== true between-provider SD {sd_true}; true age effect: {'OR 0.70 in outer true quartiles' if effect else 'none (null)'}; {len(o)} replicates ===")
-        emit(f"{'estimator':<10} {'median OR':>10} {'[2.5%, 97.5%]':>18} {'p<0.05 (%)':>11}")
+        S2 = o.attrs['s2']; emit(f"tau^2 estimates (true {sd_true**2:.3f}): DerSimonian-Laird median {np.median(S2[:,0]):.3f} (IQR {np.quantile(S2[:,0],.25):.3f}-{np.quantile(S2[:,0],.75):.3f}); unweighted moment median {np.median(S2[:,1]):.3f} (IQR {np.quantile(S2[:,1],.25):.3f}-{np.quantile(S2[:,1],.75):.3f})")
+        emit(f"{'estimator':<24} {'median OR':>10} {'[2.5%, 97.5%]':>18} {'p<0.05 (%)':>11}")
         for m in methods:
             x = o[f'{m}_or'].dropna()
-            emit(f"{m:<10} {x.median():>10.3f} {'[%.3f, %.3f]' % (x.quantile(.025), x.quantile(.975)):>18} {(o[f'{m}_p'] < .05).mean() * 100:>11.1f}")
+            emit(f"{m:<24} {x.median():>10.3f} {'[%.3f, %.3f]' % (x.quantile(.025), x.quantile(.975)):>18} {(o[f'{m}_p'] < .05).mean() * 100:>11.1f}")
 open(OUT / 'eiv_remedy_output.txt', 'w').write('\n'.join(lines) + '\n')

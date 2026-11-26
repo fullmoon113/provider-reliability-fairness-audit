@@ -1,5 +1,5 @@
 """
-LEIE-labelled check on CMS data (supplementary).
+LEIE-labeled check on CMS data (supplementary).
 
 Labels: providers in the CMS 2021-22 panel (data/cms_2021_2022_merged.csv.gz) whose NPI appears in the
 OIG List of Excluded Individuals/Entities (LEIE) with an exclusion date AFTER the claims window
@@ -20,7 +20,7 @@ Stages (same definitions as the main analysis):
 Caveat to report with the result: the label itself depends on unit size (large billers are more often
 investigated), so this check cannot separate detection bias from label bias.
 """
-import sys
+import sys, os, json
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -63,7 +63,9 @@ X["logV"] = cms["logV"].values
 X_with_age = X.assign(age=cms["age"].values)
 y = cms["y"].values
 
-def oof_flags(X, y, seed=42):
+SEED = int(os.environ.get('LEIE_SEED', 42)); SEED_ONLY = os.environ.get('LEIE_SEED_ONLY') == '1'   # seed-only mode: one age-blind fit, one JSON line
+
+def oof_flags(X, y, seed=SEED):
     skf = StratifiedKFold(5, shuffle=True, random_state=seed)
     p = np.zeros(len(y))
     for tr, va in skf.split(X, y):
@@ -85,6 +87,15 @@ def disparity(flag, lo, hi, label):
     return f1, f2
 
 q = cms["age"].quantile([.1, .25, .75, .9]).values
+if SEED_ONLY:
+    flag = oof_flags(X, y); pos = y == 1
+    ext = ((cms["age"] <= q[1]) | (cms["age"] >= q[2])).values.astype(float)
+    zV = ((cms["logV"] - cms["logV"].mean()) / cms["logV"].std()).values
+    f1 = sm.Logit(flag[pos].astype(float), sm.add_constant(ext[pos])).fit(disp=0)
+    f2 = sm.Logit(flag[pos].astype(float), sm.add_constant(np.column_stack([ext[pos], cms["logV"].values[pos]]))).fit(disp=0)
+    fs = sm.Logit(flag[pos].astype(float), sm.add_constant(zV[pos])).fit(disp=0)
+    print(json.dumps(dict(seed=SEED, recall=float(flag[pos].mean()), or_unadj=float(np.exp(f1.params[1])), or_adj=float(np.exp(f2.params[1])), slope=float(fs.params[1]))))
+    sys.exit(0)
 for name, XX in [("age excluded from model", X), ("age included in model", X_with_age)]:
     flag = oof_flags(XX, y)
     print(f"Stage 1-2 [{name}] recall overall {flag[y == 1].mean():.3f}")
@@ -110,3 +121,13 @@ print(f"Stage 3: adjusting for provider-type share instead: OR {np.exp(f3.params
 for alt in ["2024-01-01"]:
     ex2 = set(le.loc[le["d"] >= pd.Timestamp(alt), "NPI"])
     print(f"Stage 5: cut {alt}: positives {cms['NPI'].isin(ex2).sum():,} (rerun with the date as 2nd argument)")
+
+# Proposition 1 prediction for the extreme-age (outer quartile) split among the excluded providers, normal approximation:
+# A | n ~ N(mu, tau2 + sigma_w^2 / n) with tau2 = observed variance - mean sampling variance; h(n) = logistic(a + b z) fitted above.
+from scipy.stats import norm
+tau2 = cms["age"].var() - exp_var; mu = cms["age"].mean(); lo, hi = q[1], q[2]
+a_, b_ = fs.params
+zp = zV[y == 1]; npos = cms["benes"].values[y == 1]; sn = np.sqrt(tau2 + sig_w2 / npos)
+pi = norm.cdf((lo - mu) / sn) + 1 - norm.cdf((hi - mu) / sn); h = 1 / (1 + np.exp(-(a_ + b_ * zp)))
+p1 = (h * pi).sum() / pi.sum(); p0 = (h * (1 - pi)).sum() / (1 - pi).sum()
+print(f"Prop. 1 prediction for the outer-quartile split among excluded providers: OR {(p1 / (1 - p1)) / (p0 / (1 - p0)):.3f} (tau2 {tau2:.2f})")

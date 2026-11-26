@@ -1,10 +1,10 @@
 """
-[01] 원본 Kaggle CSV -> Provider 단위 피처 테이블 생성
-실행: python3 01_build_features.py
-출력: provider_features.csv
+[01] Build the provider-level feature table from the raw Kaggle CSV files
+Run from the repository root: python src/01_build_features.py
+Output: data/provider_features.csv
 
-RAW_DIR 경로만 본인 환경에 맞게 수정하면 됨.
-검증 완료: 5410 providers, 506 fraud(9.35%), 결측 0건
+Put the four raw Kaggle files in data/raw/ (see data/DATA.md).
+Checks: 5,410 providers, 506 fraud (9.35%), no missing values
 """
 from pathlib import Path
 HERE = Path(__file__).resolve().parent      # src/
@@ -23,22 +23,22 @@ inpat = pd.read_csv(RAW_DIR / "Train_Inpatientdata-1542865627584.csv")
 outpat = pd.read_csv(RAW_DIR / "Train_Outpatientdata-1542865627584.csv")
 label = pd.read_csv(RAW_DIR / "Train-1542865627584.csv")
 
-# ---------- Beneficiary 파생변수 ----------
-# 기준일: 청구 데이터 마지막 시점(2009-12-31)
+# ---------- Beneficiary-level variables ----------
+# Reference date: end of the claims window (2009-12-31)
 bene['DOB'] = pd.to_datetime(bene['DOB'])
 bene['DOD'] = pd.to_datetime(bene['DOD'], errors='coerce')
 bene['Age'] = ((pd.Timestamp('2009-12-31') - bene['DOB']).dt.days / 365.25)
 bene['IsDeceased'] = bene['DOD'].notna().astype(int)
 
-# 만성질환 컬럼은 1=있음, 2=없음 인코딩
+# Chronic-condition columns are coded 1 = present, 2 = absent
 chronic = [c for c in bene.columns if c.startswith('ChronicCond_')]
 bene['ChronicCondCount'] = (bene[chronic] == 1).sum(axis=1)
 
-# Race 코드 (CMS 공식): 1=White, 2=Black, 3=Other, 4=Asian, 5=Hispanic, 6=North American Native
-# 본 데이터에는 1,2,3,5만 존재함
+# Race codes (CMS): 1 = White, 2 = Black, 3 = Other, 4 = Asian, 5 = Hispanic, 6 = North American Native
+# Only codes 1, 2, 3 and 5 occur in this file
 bene['IsMinority'] = (bene['Race'] != 1).astype(int)
 
-# ---------- 청구 데이터 파생변수 ----------
+# ---------- Claim-level variables ----------
 inpat['AdmissionDt'] = pd.to_datetime(inpat['AdmissionDt'])
 inpat['DischargeDt'] = pd.to_datetime(inpat['DischargeDt'])
 inpat['LOS'] = (inpat['DischargeDt'] - inpat['AdmissionDt']).dt.days
@@ -47,7 +47,7 @@ inpat['DiagCount'] = inpat[[c for c in inpat.columns
 outpat['DiagCount'] = outpat[[c for c in outpat.columns
                                if c.startswith('ClmDiagnosisCode_')]].notna().sum(axis=1)
 
-# ---------- Provider 단위 집계 ----------
+# ---------- Aggregation to the provider level ----------
 ip_agg = inpat.groupby('Provider').agg(
     IP_ClaimCount=('ClaimID', 'count'),
     IP_AvgReimbursed=('InscClaimAmtReimbursed', 'mean'),
@@ -64,7 +64,7 @@ op_agg = outpat.groupby('Provider').agg(
     OP_ClaimCount=('ClaimID', 'count'),
 ).reset_index()
 
-# 환자 인구통계를 Provider 단위로 집계 (프록시 변수)
+# Patient demographics aggregated to the provider (sensitive attributes)
 all_claims = pd.concat([inpat[['BeneID', 'Provider']],
                         outpat[['BeneID', 'Provider']]]).drop_duplicates()
 all_claims = all_claims.merge(
@@ -80,12 +80,12 @@ demo = all_claims.groupby('Provider').agg(
     DeceasedRatio=('IsDeceased', 'mean'),
 ).reset_index()
 
-# ---------- 병합 ----------
+# ---------- Merge ----------
 pf = (label.merge(ip_agg, on='Provider', how='left')
            .merge(op_agg, on='Provider', how='left')
            .merge(demo, on='Provider', how='left'))
 
-# 입원/외래 서비스를 제공하지 않은 Provider는 0으로 처리
+# Providers with no inpatient or outpatient activity get zero on that domain
 for c in pf.columns:
     if c.startswith('IP_') or c.startswith('OP_'):
         pf[c] = pf[c].fillna(0)
@@ -93,7 +93,7 @@ for c in pf.columns:
 pf['ClaimsPerBene'] = (pf['IP_ClaimCount'] + pf['OP_ClaimCount']) / pf['TotalUniqueBene']
 pf['Fraud'] = (pf['PotentialFraud'] == 'Yes').astype(int)
 
-# ---------- 공정성 분석용 그룹 정의 ----------
+# ---------- Partitions used in the fairness audit ----------
 pf['age_quartile'] = pd.qcut(pf['AvgPatientAge'], 4, labels=['Q1', 'Q2', 'Q3', 'Q4'])
 pf['IsExtremeAge'] = pf['age_quartile'].isin(['Q1', 'Q4']).astype(int)
 
@@ -103,13 +103,13 @@ pf['fold'] = -1
 for i, (tr, va) in enumerate(skf.split(pf, pf['Fraud'])):
     pf.loc[va, 'fold'] = i
 
-# ---------- 검증 ----------
-assert pf.shape[0] == 5410, f"Provider 수 불일치: {pf.shape[0]}"
-assert pf['Fraud'].sum() == 506, f"사기 건수 불일치: {pf['Fraud'].sum()}"
-assert pf.isna().sum().sum() == 0, "결측치 발생"
-print(f"검증 통과: {pf.shape[0]} providers, {pf['Fraud'].sum()} fraud "
-      f"({pf['Fraud'].mean():.4f}), 결측 {pf.isna().sum().sum()}건")
-print(f"fold별 사기율: {pf.groupby('fold')['Fraud'].mean().round(4).tolist()}")
+# ---------- Checks ----------
+assert pf.shape[0] == 5410, f"provider count mismatch: {pf.shape[0]}"
+assert pf['Fraud'].sum() == 506, f"fraud count mismatch: {pf['Fraud'].sum()}"
+assert pf.isna().sum().sum() == 0, "missing values present"
+print(f"checks passed: {pf.shape[0]} providers, {pf['Fraud'].sum()} fraud "
+      f"({pf['Fraud'].mean():.4f}), missing {pf.isna().sum().sum()}")
+print(f"fraud rate by fold: {pf.groupby('fold')['Fraud'].mean().round(4).tolist()}")
 
 pf.to_csv(DATA / "provider_features.csv", index=False)
-print("저장 완료: provider_features.csv")
+print("saved: provider_features.csv")

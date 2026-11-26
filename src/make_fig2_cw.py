@@ -17,7 +17,7 @@ b = ax[0].bar(range(4), rate, color=col, edgecolor='black', linewidth=.8)
 for i, (v, k) in enumerate(zip(rate, nf)): ax[0].text(i, v+.015, f'{v:.3f}\n(n={k})', ha='center', va='bottom', fontsize=8)
 ax[0].set_ylim(0, 1.18); ax[0].set_ylabel('Detection rate'); ax[0].set_xticks(range(4)); ax[0].set_xticklabels(lab)
 ax[0].set_xlabel('Provider mean patient age, quartile'); ax[0].text(.02, .97, '(a)', transform=ax[0].transAxes, va='top', fontweight='bold')
-ax[1].bar(np.arange(4)-.2, med_f, .4, color=col, edgecolor='black', linewidth=.8, label='fraud-labelled providers')
+ax[1].bar(np.arange(4)-.2, med_f, .4, color=col, edgecolor='black', linewidth=.8, label='fraud-labeled providers')
 ax[1].bar(np.arange(4)+.2, med_a, .4, color='white', edgecolor=col, linewidth=1.3, hatch='///', label='all providers')
 for i in range(4):
     ax[1].text(i-.2, med_f[i]+3, f'{med_f[i]:.0f}', ha='center', fontsize=8); ax[1].text(i+.2, med_a[i]+3, f'{med_a[i]:.0f}', ha='center', fontsize=8)

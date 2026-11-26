@@ -1,10 +1,10 @@
 """
-[02] 전체 실험 실행 -> Table 1, Table 2, 검증 결과 출력
-실행: python3 02_experiments.py
-입력: provider_features.csv
-출력: Table1_model_performance.csv, Table2_confounding_analysis.csv
+[02] Baseline experiments with group-wise SMOTE: model performance, unadjusted and adjusted odds ratios, specificity, seeds, Fairlearn mitigation
+Run from the repository root: python src/02_experiments.py
+Input: data/provider_features.csv
+Output: output/Table1_model_performance.csv, output/Table2_confounding_analysis.csv
 
-필요 패키지: pandas numpy scikit-learn xgboost imbalanced-learn fairlearn statsmodels
+Packages: see requirements.txt. This script uses the group-wise SMOTE specification; the primary specification (class weighting) is run by src/primary_cw.py.
 """
 from pathlib import Path
 HERE = Path(__file__).resolve().parent      # src/
@@ -28,9 +28,9 @@ from fairlearn.metrics import demographic_parity_difference, equalized_odds_diff
 
 pf = pd.read_csv(DATA / "provider_features.csv")
 
-# 다중공선성 제거 후 최종 13개 피처
-# (원래 18개였으나 IP_ClaimCount/IP_TotalReimbursed/OP_ClaimCount 등이
-#  상관계수 0.93~0.99로 중복되어 제거함. SHAP 해석 안정성 확보 목적)
+# The 13 features retained after removing near-duplicate aggregates
+# (the claim counts and totals are near-duplicates of beneficiary counts and reimbursement
+#  (r = 0.93 to 0.99) and destabilize post-hoc attribution without improving prediction)
 FEATS = ['IP_UniqueBene', 'IP_AvgReimbursed', 'IP_AvgLOS', 'IP_AvgDiagCodes',
          'IP_UniqueAttPhysician', 'OP_AvgReimbursed', 'OP_AvgDiagCodes',
          'OP_UniqueAttPhysician', 'TotalUniqueBene', 'FemaleRatio',
@@ -43,9 +43,9 @@ sens = pf['IsExtremeAge'].values
 
 
 def stratified_smote(Xa, ya, sa, seed=42):
-    """민감그룹별로 SMOTE를 따로 적용.
-    민감변수를 다른 피처와 함께 보간 후 반올림하면 그룹 라벨이 오염되므로
-    (합성샘플의 3.4%가 0.3~0.7 사이 애매한 값), 그룹을 나눠서 적용함."""
+    """Apply SMOTE separately within each sensitive group.
+    Interpolating the sensitive attribute with the other features and rounding contaminates the group label
+    (3.4% of synthetic samples fall between 0.3 and 0.7), so SMOTE is applied within groups."""
     Xo, yo, so = [], [], []
     for g in np.unique(sa):
         m = sa == g
@@ -57,7 +57,7 @@ def stratified_smote(Xa, ya, sa, seed=42):
 
 
 def run_oof(model_fn, seed=42):
-    """out-of-fold 예측 생성"""
+    """Out-of-fold predictions"""
     oof = np.zeros(len(pf))
     for f in range(5):
         tr, va = folds != f, folds == f
@@ -70,7 +70,7 @@ def run_oof(model_fn, seed=42):
     return oof
 
 
-# ============ Table 1: 모델 성능 비교 ============
+# ============ Table 1: model performance ============
 print("=" * 70)
 print("Table 1: Model Performance (5-fold CV)")
 print("=" * 70)
@@ -108,7 +108,7 @@ print(t1.to_string(index=False))
 t1.to_csv(OUT / "Table1_model_performance.csv", index=False)
 
 
-# ============ Table 2: 교란변수 분석 (핵심 결과) ============
+# ============ Table 2: odds ratios with and without panel-size adjustment ============
 print("\n" + "=" * 70)
 print("Table 2: Confounding Analysis (KEY RESULT)")
 print("=" * 70)
@@ -143,7 +143,7 @@ print(t2.to_string(index=False))
 t2.to_csv(OUT / "Table2_confounding_analysis.csv", index=False)
 
 
-# ============ 검증 1: 통제변수 특이성 ============
+# ============ Check 1: specificity of the control variable ============
 print("\n" + "=" * 70)
 print("Verification 1: Control Variable Specificity")
 print("=" * 70)
@@ -152,11 +152,11 @@ for cname in ['TotalUniqueBene', 'AvgChronicCondCount', 'FemaleRatio', 'Deceased
               'ClaimsPerBene', 'IP_UniqueBene', 'OP_AvgReimbursed', 'IP_AvgLOS']:
     cv = np.log1p(pf.loc[fm, cname].values) if cname == 'TotalUniqueBene' else pf.loc[fm, cname].values
     m = sm.Logit(det, sm.add_constant(np.column_stack([ext, cv]))).fit(disp=0)
-    print(f"{cname:22s} 통제: age p={m.pvalues[1]:.4f} -> "
+    print(f"{cname:22s} control: age p={m.pvalues[1]:.4f} -> "
           f"{'ELIMINATED' if m.pvalues[1] >= 0.05 else 'retained'}")
 
 
-# ============ 검증 2: 다중시드 재현성 ============
+# ============ Check 2: multiple seeds ============
 print("\n" + "=" * 70)
 print("Verification 2: Multi-seed Reproducibility")
 print("=" * 70)
@@ -170,17 +170,17 @@ for seed in [42, 1, 7, 99, 2024]:
           f"adjusted p={ma.pvalues[1]:.4f} -> {verdict}")
 
 
-# ============ 검증 3: 교란 구조 근거 ============
+# ============ Check 3: evidence on the confounding structure ============
 print("\n" + "=" * 70)
 print("Verification 3: Evidence of Confounding Structure")
 print("=" * 70)
 ext_all = pf['IsExtremeAge'].values
 vol_all = np.log1p(pf['TotalUniqueBene'].values)
 t, p = stats.ttest_ind(vol_all[ext_all == 0], vol_all[ext_all == 1])
-print(f"전체 Provider log(volume): 중간군={vol_all[ext_all==0].mean():.3f}, "
-      f"극단군={vol_all[ext_all==1].mean():.3f}, p={p:.2e}")
-print(f"청구량 중앙값: 중간군={pf[ext_all==0]['TotalUniqueBene'].median():.0f}, "
-      f"극단군={pf[ext_all==1]['TotalUniqueBene'].median():.0f}")
+print(f"All providers, log(volume): middle group={vol_all[ext_all==0].mean():.3f}, "
+      f"extreme group={vol_all[ext_all==1].mean():.3f}, p={p:.2e}")
+print(f"Median panel size: middle group={pf[ext_all==0]['TotalUniqueBene'].median():.0f}, "
+      f"extreme group={pf[ext_all==1]['TotalUniqueBene'].median():.0f}")
 
 m_age = sm.Logit(det, sm.add_constant(ext)).fit(disp=0)
 m_vol = sm.Logit(det, sm.add_constant(log_vol)).fit(disp=0)
@@ -189,11 +189,11 @@ print(f"\nPseudo R²: age only={m_age.prsquared:.4f}, volume only={m_vol.prsquar
       f"both={m_both.prsquared:.4f}")
 
 pf['vol_q'] = pd.qcut(pf['TotalUniqueBene'], 4, labels=['Q1', 'Q2', 'Q3', 'Q4'], duplicates='drop')
-print("\n청구량 분위별 사기율:")
+print("\nFraud rate by panel-size quartile:")
 print(pf.groupby('vol_q')['Fraud'].agg(['count', 'sum', 'mean']).round(4))
 
 
-# ============ 참고: Fairlearn 완화 실험 (부수 결과) ============
+# ============ Fairlearn equalized-odds mitigation (secondary result) ============
 print("\n" + "=" * 70)
 print("Supplementary: Fairlearn Mitigation (secondary result)")
 print("=" * 70)
@@ -204,8 +204,7 @@ for f in range(5):
     Xtr, Xva = sc.fit_transform(X[tr]), sc.transform(X[va])
     Xb, yb, sb = stratified_smote(Xtr, y[tr], sens[tr])
     base = LogisticRegression(max_iter=500, random_state=42)
-    # 주의: RandomForest를 base로 쓰면 시드에 따라 결과 불안정(3/3 시드 중 1개 악화)
-    #      LogisticRegression이 안정적임 (4/4 시드 일관 개선)
+    # Base learner: logistic regression, the model audited in the main analysis. The mitigation is reported for this learner only (see README).
     mit = ExponentiatedGradient(estimator=base, constraints=EqualizedOdds(),
                                 eps=0.02, max_iter=30)
     mit.fit(Xb, yb, sensitive_features=sb)
@@ -218,4 +217,4 @@ for lab, pred in [("Before mitigation", oof), ("After mitigation", oof_mit)]:
           f"mid recall={recall_score(y[sens==0],pred[sens==0]):.3f}, "
           f"extreme recall={recall_score(y[sens==1],pred[sens==1]):.3f}")
 
-print("\n완료. Table1, Table2 CSV 저장됨.")
+print("\nDone. Table1 and Table2 CSV files saved.")

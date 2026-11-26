@@ -4,7 +4,7 @@ HERE = Path(__file__).resolve().parent; ROOT = HERE.parent; OUT = ROOT / 'output
 Each (beneficiary, provider) pair keeps its provider, so panel sizes and the overall age distribution are unchanged;
 the ages are permuted across pairs, which removes every provider-level structure in patient age. For each permutation the
 provider mean age, the outer-quartile and top-quartile partitions and the reference audit (class-weighted LR detections, fixed
-out-of-fold predictions among the 506 fraud-labelled providers, with and without log panel size) are recomputed.
+out-of-fold predictions among the 506 fraud-labeled providers, with and without log panel size) are recomputed.
 Writes output/permutation_null.csv and output/permutation_null_output.txt.
 Usage: python src/permutation_null.py [REPS]   (needs data/raw/Train_*.csv)"""
 import sys, io, numpy as np, pandas as pd
@@ -41,7 +41,7 @@ OBS_U, OBS_A, OBS_T = 0.477, 1.018, 0.444
 buf = io.StringIO()
 def P(*a):
     s = ' '.join(str(x) for x in a); print(s); buf.write(s + '\n')
-P(f'{REPS} permutations; reference audit on 506 fraud-labelled providers (class-weighted LR detections)')
+P(f'{REPS} permutations; reference audit on 506 fraud-labeled providers (class-weighted LR detections)')
 P(f'outer partition: median uOR {d.uOR.median():.3f} [{d.uOR.quantile(.025):.3f}, {d.uOR.quantile(.975):.3f}]; significant {(d.up<.05).mean()*100:.1f}%; adjusted significant {(d.ap<.05).mean()*100:.1f}%; median adj OR {d.aOR.median():.3f}')
 P(f'observed 0.477 percentile of permutation uOR: {(d.uOR <= OBS_U).mean()*100:.1f}')
 P(f'top quartile: median OR {d.tOR.median():.3f} [{d.tOR.quantile(.025):.3f}, {d.tOR.quantile(.975):.3f}]; significant {(d.tp<.05).mean()*100:.1f}%; observed 0.444 percentile {(d.tOR <= OBS_T).mean()*100:.1f}')

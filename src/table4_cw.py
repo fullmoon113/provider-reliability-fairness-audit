@@ -1,7 +1,7 @@
 from pathlib import Path
 HERE = Path(__file__).resolve().parent; ROOT = HERE.parent; OUT = ROOT / 'output'
 """Table 4 under the class-weighting primary specification. Skewed covariates enter on the log scale.
-Arm 1: standardized mean difference (pooled SD) between extreme and mid-range age-mix among the 506 fraud-labelled providers.
+Arm 1: standardized mean difference (pooled SD) between extreme and mid-range age-mix among the 506 fraud-labeled providers.
 Arm 2: odds ratio of detection per SD of the covariate (Firth), in a model that also contains the age-mix indicator."""
 import sys, numpy as np, statsmodels.api as sm
 from scipy import stats

@@ -67,7 +67,7 @@ def load(path):
     rt = d[race].fillna(FILL).sum(axis=1).replace(0, np.nan)
     for c, nm in zip(race[1:], ['Black', 'Asian/Pacific Is.', 'Hispanic', 'Native American', 'Other race']):
         o[nm] = d[c].fillna(FILL) / rt; supp[nm] = d[c].isna().mean()
-    o['non-White'] = 1 - d['Bene_Race_Wht_Cnt'].fillna(FILL) / rt
+    o['non-White'] = 1 - d['Bene_Race_Wht_Cnt'].fillna(FILL) / rt; supp['non-White'] = d['Bene_Race_Wht_Cnt'].isna().mean()  # blank = suppressed (1-10) or zero
     du = d['Bene_Dual_Cnt'].fillna(FILL); nd = d['Bene_Ndual_Cnt'].fillna(FILL)
     o['dual-eligible'] = du / (du + nd).replace(0, np.nan)
     return o.dropna(subset=['n', 'age']), supp
@@ -133,13 +133,31 @@ for name, tag, kind in ATTR:
     tr.append(r)
 tr = pd.DataFrame(tr)
 
+# within-specialty test-retest: providers with the same specialty in both years; each year's value is centered at its
+# specialty mean (n-weighted within year) before correlating, so differences between specialties do not count as stability.
+W = M[M['spec_1'] == M['spec_2']].copy()
+trw = []
+for name, tag, kind in ATTR:
+    c1, c2 = f'{tag}_1', f'{tag}_2'
+    X = W[[c1, c2, 'spec_1', 'nmin']].dropna().copy()
+    X['v1'] = X[c1] - X.groupby('spec_1')[c1].transform('mean')
+    X['v2'] = X[c2] - X.groupby('spec_1')[c2].transform('mean')
+    r = {'attribute': name, 'all': X[['v1', 'v2']].corr().iloc[0, 1]}
+    for lo, hi in BANDS:
+        m = X[(X.nmin >= lo) & (X.nmin <= hi)]
+        r[f'n {bname(lo, hi)}'] = m[['v1', 'v2']].corr().iloc[0, 1]
+    trw.append(r)
+trw = pd.DataFrame(trw)
+
 suf = '_zero' if ZERO else ''
 res.to_csv(OUTD / f'cms_stage0_sweep{suf}.csv', index=False)
 br.to_csv(OUTD / f'cms_stage0_by_band{suf}.csv', index=False)
 sr.to_csv(OUTD / f'cms_stage0_by_specialty_band{suf}.csv', index=False)
 tr.to_csv(OUTD / f'cms_stage0_testretest{suf}.csv', index=False)
+trw.to_csv(OUTD / f'cms_stage0_testretest_within{suf}.csv', index=False)
 pd.set_option('display.width', 250)
 print('Overall (pooled across specialties)'); print(res.round(4).to_string(index=False))
 print('\nBy panel-size band'); print(br.round(3).to_string(index=False))
 print('\nTest-retest correlation by minimum panel size'); print(tr.round(3).to_string(index=False))
+print('\nTest-retest correlation within specialty, by minimum panel size'); print(trw.round(3).to_string(index=False))
 print('\nWithin-specialty (top specialties), by band'); print(sr.round(3).to_string(index=False))

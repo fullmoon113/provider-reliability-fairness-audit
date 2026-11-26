@@ -3,11 +3,11 @@ Proposition 1 (partition-induced disparity under a null): analytic prediction an
 
 Model of the null simulation (src/null_sim.py): A_i = mu + a_i + e_i, a_i ~ N(0, tau^2), e_i | n_i ~ N(0, sw^2/n_i);
 detection D depends on panel size only, h(n) = logistic(g0 + g1 z(n)); fraud incidence logistic(f0 + f1 z(n)).
-Among fraud-labelled providers the audit compares detection across G = 1{A in S}.  Prop. 1(i):
+Among fraud-labeled providers the audit compares detection across G = 1{A in S}.  Prop. 1(i):
     Pr(D=1|G=1) - Pr(D=1|G=0) = Cov{h(N), pi(N)} / [pibar (1 - pibar)],   pi(n) = Pr(G=1 | n),
 with expectations over the panel-size distribution of FRAUD-LABELLED providers.
 Outputs: analytic gap and odds ratio for the outer-quartile, top-quartile and median partitions, for the empirical
-fraud-labelled panel sizes (506 providers) and for the model-implied fraud weights over all 5,410 providers, at several tau;
+fraud-labeled panel sizes (506 providers) and for the model-implied fraud weights over all 5,410 providers, at several tau;
 and the observed audit for the median partition and the top-quartile partition.
 Usage: python src/prop1_analytic.py
 """
@@ -48,14 +48,14 @@ emit(f"{'tau':>5} {'partition':>10} {'weights':>22} {'gap':>8} {'OR':>7}")
 res = {}
 for tau in (0.901, 1.65, 3.47, 4.85):
     for part in ('outer', 'top', 'median'):
-        for wn, w in (('fraud-labelled (506)', fraud.astype(float)), ('model-implied', pfr)):
+        for wn, w in (('fraud-labeled (506)', fraud.astype(float)), ('model-implied', pfr)):
             gap, orr, chk = prop1(tau, part, w)
             assert abs(gap - chk) < 1e-9
             emit(f"{tau:5.3f} {part:>10} {wn:>22} {gap:8.4f} {orr:7.3f}")
             res[(tau, part, wn)] = (gap, orr)
 
-# observed audits (detection among fraud-labelled providers, out-of-fold logistic regression)
-emit("\nObserved audits among the 506 fraud-labelled providers (unadjusted OR [95% CI] p | adjusted OR [95% CI] p)")
+# observed audits (detection among fraud-labeled providers, out-of-fold logistic regression)
+emit("\nObserved audits among the 506 fraud-labeled providers (unadjusted OR [95% CI] p | adjusted OR [95% CI] p)")
 A = pf.AvgPatientAge.values
 parts = {'outer quartiles (Q1+Q4)': outer(A),
          'top quartile (>= Q3)': (A >= np.quantile(A, .75)).astype(int),
