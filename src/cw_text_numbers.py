@@ -89,7 +89,8 @@ for k, nm in [(4, 'quartiles'), (10, 'deciles')]:
         t_ = np.array([[(dd[e == 1] == 1).sum(), (dd[e == 1] == 0).sum()], [(dd[e == 0] == 1).sum(), (dd[e == 0] == 0).sum()]])+0.0
         if t_.sum(1).min() == 0: continue
         tabs.append(t_); gaps.append(dd[e == 0].mean()-dd[e == 1].mean()); ws.append(m.sum())
-    P(f'{nm}: MH OR {StratifiedTable([t+0 for t in tabs]).oddsratio_pooled:.3f}  stratum-weighted gap {np.average(gaps, weights=ws):.3f}')
+    stt = StratifiedTable([t+0 for t in tabs]); lo_, hi_ = stt.oddsratio_pooled_confint()
+    P(f'{nm}: MH OR {stt.oddsratio_pooled:.3f} [{lo_:.3f}, {hi_:.3f}]  stratum-weighted gap {np.average(gaps, weights=ws):.3f}')
 P('unstratified gap', det[ext[fm] == 0].mean()-det[ext[fm] == 1].mean())
 
 P('\n== Thresholds (probability >= t)')

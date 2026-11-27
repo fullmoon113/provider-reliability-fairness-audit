@@ -5,7 +5,7 @@ Model of the null simulation (src/null_sim.py): A_i = mu + a_i + e_i, a_i ~ N(0,
 detection D depends on panel size only, h(n) = logistic(g0 + g1 z(n)); fraud incidence logistic(f0 + f1 z(n)).
 Among fraud-labeled providers the audit compares detection across G = 1{A in S}.  Prop. 1(i):
     Pr(D=1|G=1) - Pr(D=1|G=0) = Cov{h(N), pi(N)} / [pibar (1 - pibar)],   pi(n) = Pr(G=1 | n),
-with expectations over the panel-size distribution of FRAUD-LABELLED providers.
+with expectations over the panel-size distribution of FRAUD-LABELED providers.
 Outputs: analytic gap and odds ratio for the outer-quartile, top-quartile and median partitions, for the empirical
 fraud-labeled panel sizes (506 providers) and for the model-implied fraud weights over all 5,410 providers, at several tau;
 and the observed audit for the median partition and the top-quartile partition.

@@ -1,7 +1,7 @@
 from pathlib import Path
 HERE = Path(__file__).resolve().parent; ROOT = HERE.parent; OUT = ROOT / 'output'; DATA = ROOT / 'data'
 """Fig. 4: null simulation (true age effect zero), three panels: (a) unadjusted OR, with the observed estimate, the analytic
-prediction of Proposition 1 and, when available, the permutation null; (b) panel-size-adjusted OR; (c) significant-disparity rate
+prediction of Proposition 1 and, when available, random re-linking of ages; (b) panel-size-adjusted OR; (c) significant-disparity rate
 against the true between-provider SD."""
 import json, numpy as np, pandas as pd
 import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
@@ -14,7 +14,7 @@ fig, ax = plt.subplots(1, 3, figsize=(7.2, 2.5))
 a = ax[0]; bins = np.linspace(0.1, 1.6, 40)
 a.hist(r.uOR, bins=bins, color='#b5483a', alpha=.85, edgecolor='black', linewidth=.4, label='Null simulation')
 if perm is not None:
-    a.hist(perm.uOR.clip(0.1, 1.6), bins=bins, histtype='step', color='black', lw=1.1, label='Re-linked ages')
+    a.hist(perm.uOR.clip(0.1, 1.6), bins=bins, histtype='step', color='black', lw=1.1, label='Random re-linking')
 a.axvline(OBS_U, color='#1f3864', lw=2, label='Observed'); a.axvline(PRED, color='#1f3864', lw=1.4, ls='--', label='Prop. 1')
 a.axvline(1, color='grey', ls=':', lw=1); a.set_xlabel('Unadjusted odds ratio'); a.set_ylabel('Replications'); a.legend(fontsize=6.5, frameon=False, loc='upper right')
 a.text(.02, .97, '(a)', transform=a.transAxes, va='top', fontweight='bold')

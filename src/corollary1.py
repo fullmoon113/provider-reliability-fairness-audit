@@ -7,7 +7,7 @@ the script returns eta_G, eta_D, rho, phi = Corr(D, G) = rho * eta_D * eta_G, th
 probability that a two-sided level-alpha test of D vs G rejects in an audit of m units,
   Phi(sqrt(m)|phi| - z) + Phi(-sqrt(m)|phi| - z).
 
-    python src/corollary1.py        # writes output/corollary1_table.csv and output/corollary1_output.txt (Table S19)
+    python src/corollary1.py        # writes output/corollary1_table.csv and output/corollary1_output.txt (Table S4)
 """
 import sys, json
 from pathlib import Path

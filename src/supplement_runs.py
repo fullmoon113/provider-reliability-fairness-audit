@@ -1,6 +1,6 @@
 from pathlib import Path
 HERE = Path(__file__).resolve().parent; ROOT = HERE.parent; OUT = ROOT / 'output'
-"""Numbers for supplement tables S1, S4, S5, S8, S10, S11 under the class-weighting primary specification."""
+"""Numbers for supplement tables S15, S22, S17, S18, S11, S24 under the class-weighting primary specification."""
 import sys, io, numpy as np, pandas as pd, statsmodels.api as sm
 from scipy import stats
 from sklearn.preprocessing import StandardScaler

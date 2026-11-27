@@ -29,7 +29,7 @@ OUTD = Path(args[2]) if len(args) > 2 else OUT
 OUTD.mkdir(exist_ok=True, parents=True)
 SW = 12.52          # CMS-estimated within-provider SD of beneficiary age (Section IV-E)
 FILL = 0.0 if ZERO else 5.5
-BANDS = [(11, 20), (21, 50), (51, 100), (101, 10 ** 9)]
+BANDS = [(11, 20), (21, 50), (51, 100), (101, 200), (201, 500), (501, 10 ** 9)]   # nests in the bands of Fig. 4(a)
 bname = lambda lo, hi: f'{lo}-{hi}' if hi < 1e9 else f'{lo}+'
 
 # m(R): share misclassified by an outer-vs-middle split, from simulation on a fine grid

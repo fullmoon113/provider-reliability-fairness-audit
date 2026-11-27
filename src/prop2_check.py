@@ -1,4 +1,4 @@
-"""Proposition 2 check (paper Section IV-J, Table S13 Panel A): which profiling-style estimates carry a size artifact under the null.
+"""Proposition 2 check (paper Section IV-J, Table S21 Panel A): which profiling-style estimates carry a size artifact under the null.
 Same null simulation as Table 6 (true age effect zero; tau = 0.90).  Partitions (outer quartiles) of: the observed age (naive); the posterior
 mean (Eq. 4); ONE draw from the posterior of the true age (Prop. 2(a)); and the posterior probability of the true outer group (Prop. 2(b),
 entered as a standardized covariate, with and without log panel size).  Each is evaluated with tau^2 known and with tau^2 estimated

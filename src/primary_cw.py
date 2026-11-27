@@ -4,10 +4,10 @@ ROOT = HERE.parent
 OUT = ROOT / 'output'; OUT.mkdir(exist_ok=True)
 
 """
-Primary specification with class weighting: regenerates the numbers of Tables 1, 3, 4, 6, the
-false-positive audit, the fairness-mitigation paragraph and Table 8 with the detection model trained WITHOUT resampling
+Primary specification with class weighting: regenerates the numbers of the model-performance, disparity-by-partition, specificity and detection-model tables, the
+false-positive audit, the fairness-mitigation paragraph and the shrinkage table with the detection model trained WITHOUT resampling
 (class_weight='balanced'), so that the model does not depend on any partition.  Group-wise SMOTE results are kept
-as a sensitivity analysis (src/02_experiments.py, src/refit_sweep.py).
+as a sensitivity analysis (src/sensitivity_groupwise_smote.py, src/refit_sweep.py).
 Usage: python src/primary_cw.py   -> output/primary_cw_output.txt
 """
 import sys, io
@@ -29,8 +29,8 @@ ext = pf.IsExtremeAge.values
 top = (pf.AvgPatientAge >= pf.AvgPatientAge.quantile(.75)).astype(int).values
 mino = (pf.MinorityRatio >= pf.MinorityRatio.quantile(.75)).astype(int).values
 
-# ---------------- Table 1: performance, class weighting ----------------
-P('== Table 1 (class weighting)')
+# ---------------- Model performance, class weighting ----------------
+P('== Model performance (class weighting)')
 for name in ['LR', 'RF', 'XGB']:
     f1s, aucs, prs, recs, precs = [], [], [], [], []
     for f in range(5):
@@ -45,22 +45,22 @@ for name in ['LR', 'RF', 'XGB']:
     P(f'{name:4s} F1 {np.mean(f1s):.3f}+-{np.std(f1s):.3f}  P {np.mean(precs):.3f}+-{np.std(precs):.3f}  '
       f'R {np.mean(recs):.3f}+-{np.std(recs):.3f}  ROC {np.mean(aucs):.3f}+-{np.std(aucs):.3f}  PR {np.mean(prs):.3f}+-{np.std(prs):.3f}')
 
-# ---------------- Table 3 and Table 6 ----------------
+# ---------------- Disparity by partition and detection models ----------------
 oof = {m: oof_lr(pf, ext, strategy='class_weight', model=m) for m in ['LR', 'RF', 'XGB']}
 det = oof['LR'][fm]
-P('\n== Table 3 (LR, class weighting): partition, n, unadj OR [CI] p, adj OR [CI] p')
+P('\n== Disparity by partition (LR, class weighting): partition, n, unadj OR [CI] p, adj OR [CI] p')
 for lab, g in [('Extreme age-mix (Q1+Q4)', ext), ('High-elderly (top 25%)', top), ('High-minority (top 25%)', mino)]:
     gg = g[fm]
     u = logit_or(det, [gg]); a = logit_or(det, [gg, logn])
     P(f'{lab:26s} n={int(gg.sum()):4d} unadj {u[0]:.3f} [{u[2]:.3f},{u[3]:.3f}] p={u[1]:.4f} | adj {a[0]:.3f} [{a[2]:.3f},{a[3]:.3f}] p={a[1]:.4f}')
     P(f'    detection rate group/rest: {det[gg==1].mean():.3f}/{det[gg==0].mean():.3f}')
-P('\n== Table 6 (detection model; class weighting)')
+P('\n== Detection models (class weighting)')
 for m in ['LR', 'RF', 'XGB']:
     d = oof[m][fm]; u = logit_or(d, [ext[fm]]); a = logit_or(d, [ext[fm], logn])
     P(f'{m:4s} det {d.mean()*100:.1f}% unadj {u[0]:.3f} [{u[2]:.3f},{u[3]:.3f}] p={u[1]:.4f} adj {a[0]:.3f} [{a[2]:.3f},{a[3]:.3f}] p={a[1]:.4f}')
 
-# ---------------- Table 4: specificity ----------------
-P('\n== Table 4 (LR, class weighting): control, arm1 d, arm2 stdOR, age p, Holm p')
+# ---------------- Specificity ----------------
+P('\n== Specificity (LR, class weighting): control, arm1 d, arm2 stdOR, age p, Holm p')
 ctrl = {'Panel size, log': np.log1p(n), 'Mean length of stay': pf.IP_AvgLOS.values, 'Chronic conditions': pf.AvgChronicCondCount.values,
         'Claims per beneficiary': pf.ClaimsPerBene.values, 'Inpatient beneficiaries': pf.IP_UniqueBene.values,
         'Outpatient reimbursement': pf.OP_AvgReimbursed.values, 'Deceased ratio': pf.DeceasedRatio.values, 'Female ratio': pf.FemaleRatio.values}
@@ -107,6 +107,7 @@ for f in range(5):
                                constraints=EqualizedOdds(), eps=0.02, max_iter=30)
     eg.fit(Xtr, y[tr], sensitive_features=ext[tr])
     for d_ in range(draws):
+        # private Fairlearn method; version pinned in requirements-lock.txt (fairlearn==0.15.0)
         mit_oof[d_][va] = eg._pmf_predict(Xva)[:, 1] > np.random.default_rng(d_ * 100 + f).random(va.sum())
 for d_ in range(draws):
     p_ = mit_oof[d_]
@@ -115,11 +116,11 @@ for d_ in range(draws):
 P(f'Mitigated (30 draws): EOD {np.mean(eods):.4f} (SD {np.std(eods):.4f}; falls in {sum(e < equalized_odds_difference(y, pred, sensitive_features=ext) for e in eods)}/30), '
   f'F1 {np.mean(f1m):.3f}, recall mid {np.mean(rm):.3f} extreme {np.mean(re):.3f}')
 
-# ---------------- Table 8: shrinkage ----------------
+# ---------------- Shrinkage ----------------
 st2 = 0.812; sw2 = 12.7275 ** 2
 rel = st2 / (st2 + sw2 / n); shr = age.mean() + rel * (age - age.mean())
 ext_s = outer(shr)
-P(f'\n== Table 8 inputs: SD observed {age.std():.2f} -> shrunken {shr.std():.3f}; membership kept {(ext_s==ext).mean()*100:.1f}%')
+P(f'\n== Shrinkage inputs: SD observed {age.std():.2f} -> shrunken {shr.std():.3f}; membership kept {(ext_s==ext).mean()*100:.1f}%')
 gs = ext_s[fm]
 P(f'extreme (shrunken) group: median panel {np.median(n[ext_s==1]):.0f} (was {np.median(n[ext==1]):.0f}); '
   f'share in top panel-size quartile {np.mean(n[ext_s==1] >= np.quantile(n, .75))*100:.1f}% (was {np.mean(n[ext==1] >= np.quantile(n, .75))*100:.1f}%); '

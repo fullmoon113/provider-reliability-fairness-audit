@@ -42,7 +42,7 @@ def leie_labels(d, leie_path):
     return d.NPI.isin(set(le.loc[le.dt >= CUT, 'NPI'])).astype(int).values
 
 def sigma_w_mean_age(g):
-    """Within-provider SD of age from the 2021 -> 2022 change, as in Table S9: slope of squared change on (1/n21 + 1/n22), providers with >= 50 beneficiaries."""
+    """Within-provider SD of age from the 2021 -> 2022 change, as in Table S2: slope of squared change on (1/n21 + 1/n22), providers with >= 50 beneficiaries."""
     dA = (g.age - g.age21).values; inv = (1 / g.n21 + 1 / g.n).values; keep = np.minimum(g.n21, g.n).values >= 50
     return float(np.sqrt(max(np.polyfit(inv[keep], dA[keep] ** 2, 1)[0], 1.0)))
 

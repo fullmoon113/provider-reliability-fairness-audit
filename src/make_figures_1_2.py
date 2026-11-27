@@ -30,29 +30,34 @@ plt.tight_layout(); plt.savefig(str(OUT/'fig2_group_smote.png'),bbox_inches='tig
 
 # ---- DAG ----
 plt.rcParams.update({'font.size':13})
-fig,ax=plt.subplots(figsize=(11.5,6.8)); ax.set_xlim(-0.9,11.5); ax.set_ylim(-0.6,7.2); ax.axis('off')
-NODE={'Astar':(1.5,5.0),'N':(5.6,5.0),'Y':(9.6,5.0),'A':(1.5,2.7),'L':(9.6,2.7),'D':(5.6,0.85)}
-LBL={'Astar':'A*','N':'N','Y':'Y','A':'A','L':'L','D':'D'}
-SUB={'Astar':'true patient\nage mix','N':'panel size','Y':'true fraud','A':'measured\nage mix','L':'fraud label\n(analysis conditions on $L=1$)','D':'detected'}
-COL={'Astar':'#dfe6f2','N':'#c44e52','Y':'#dfe6f2','A':'#4c72b0','L':'#f2d9a0','D':'#4c72b0'}; FG={'N':'white','A':'white','D':'white'}
+fig,ax=plt.subplots(figsize=(11.5,6.9)); ax.set_xlim(-0.9,11.5); ax.set_ylim(-0.6,7.3); ax.axis('off')
+NODE={'Astar':(1.5,5.0),'N':(5.6,5.0),'Y':(9.6,5.0),'A':(1.5,2.7),'X':(5.6,2.7),'L':(9.6,2.2),'D':(5.6,0.45)}
+LBL={'Astar':'A*','N':'N','Y':'Y','A':'A','X':'X','L':'L','D':'D'}
+SUB={'Astar':'true patient\nage mix','N':'panel size','Y':'true fraud','A':'measured\nage mix','L':'fraud label\n($D$ observed only if $L=1$)','D':'detected'}
+COL={'Astar':'#dfe6f2','N':'#c44e52','Y':'#dfe6f2','A':'#4c72b0','X':'#8fa8c8','L':'#f2d9a0','D':'#4c72b0'}; FG={'N':'white','A':'white','D':'white'}
 ABOVE={'Astar','N','Y'}
 for k,(x,y0) in NODE.items():
     if k=='L': ax.add_patch(Rectangle((x-.60,y0-.44),1.20,.88,fc=COL[k],ec='black',lw=2.4,zorder=3))
     else: ax.add_patch(Circle((x,y0),.52,fc=COL[k],ec='black',lw=1.8,zorder=3))
     ax.text(x,y0,LBL[k],ha='center',va='center',fontsize=20,fontweight='bold',style='italic',color=FG.get(k,'black'),zorder=4)
-    if k in ABOVE: ax.text(x,y0+0.72,SUB[k],ha='center',va='bottom',fontsize=11.5,color='#333',zorder=4)
+    if k=='X': ax.text(x+0.72,y0,'claim\nfeatures',ha='left',va='center',fontsize=11.5,color='#333',zorder=4)
+    elif k in ABOVE: ax.text(x,y0+0.72,SUB[k],ha='center',va='bottom',fontsize=11.5,color='#333',zorder=4)
     else: ax.text(x,y0-(.92 if k=='L' else .88),SUB[k],ha='center',va='top',fontsize=11.5,color='#333',zorder=4)
-def arrow(a,b,color='black',ls='-',lw=1.9,rad=0.0,style='-|>'):
+def arrow(a,b,color='black',ls='-',lw=1.9,rad=0.0,style='-|>',sh=32):
     x1,y1=NODE[a]; x2,y2=NODE[b]
-    ax.add_patch(FancyArrowPatch((x1,y1),(x2,y2),arrowstyle=style,mutation_scale=19,lw=lw,color=color,linestyle=ls,shrinkA=32,shrinkB=32,zorder=2,connectionstyle='arc3,rad=%s'%rad))
-arrow('Astar','A'); arrow('N','A',color='#c44e52',lw=2.6); arrow('N','D',color='#c44e52',lw=2.6)
-arrow('N','L',color='#8c8c8c',ls=(0,(5,3))); arrow('Y','L'); from matplotlib.path import Path as MPath
-ax.add_patch(FancyArrowPatch(path=MPath([(1.1,4.55),(-1.3,3.2),(-0.6,0.5),(5.05,0.7)],[MPath.MOVETO,MPath.CURVE4,MPath.CURVE4,MPath.CURVE4]),arrowstyle='-|>',mutation_scale=19,lw=2.4,color='#1f3864',linestyle=(0,(4,3)),zorder=2)); arrow('A','D',color='#8c8c8c',ls=(0,(1,3)),lw=1.6,style='-')
+    ax.add_patch(FancyArrowPatch((x1,y1),(x2,y2),arrowstyle=style,mutation_scale=19,lw=lw,color=color,linestyle=ls,shrinkA=sh,shrinkB=sh,zorder=2,connectionstyle='arc3,rad=%s'%rad))
+arrow('Astar','A'); arrow('N','A',color='#c44e52',lw=2.6); arrow('N','X',color='#c44e52',lw=2.6); arrow('X','D',color='#c44e52',lw=2.6)
+arrow('Y','X'); arrow('Y','L'); arrow('N','L',color='#8c8c8c',ls=(0,(5,3)),rad=-0.12); arrow('N','Y',color='#8c8c8c',ls=(0,(5,3)))
+arrow('Astar','Y',color='#8c8c8c',ls=(0,(5,3)),rad=-0.30); arrow('L','D',color='#8c8c8c',ls=(0,(1,3)),lw=1.6,style='-|>')
+from matplotlib.path import Path as MPath
+ax.add_patch(FancyArrowPatch(path=MPath([(1.1,4.55),(-1.3,3.2),(-0.8,0.2),(5.05,0.35)],[MPath.MOVETO,MPath.CURVE4,MPath.CURVE4,MPath.CURVE4]),arrowstyle='-|>',mutation_scale=19,lw=2.4,color='#1f3864',linestyle=(0,(4,3)),zorder=2)); arrow('A','D',color='#8c8c8c',ls=(0,(1,3)),lw=1.6,style='-')
 bb=dict(fc='white',ec='none',pad=2.5)
-ax.text(4.1,2.8,'measurement precision\n'+r'Var$(A \mid A^*, N) = \sigma_w^2 / N$',ha='center',va='center',fontsize=11.5,color='#c44e52',fontweight='bold',bbox=bb,zorder=5)
-ax.text(6.05,2.95,'behavioral\nsignal',ha='left',fontsize=11.5,color='#c44e52',fontweight='bold',bbox=bb,zorder=5)
-ax.text(7.85,4.30,'investigation\nintensity ?',ha='center',fontsize=11,color='#666',style='italic',bbox=bb,zorder=5)
-ax.text(3.0,-0.05,r'effect under test'+'\n'+r'$A^* \rightarrow D$',ha='center',va='center',fontsize=11.5,color='#1f3864',fontweight='bold',bbox=bb,zorder=5)
-ax.text(3.75,1.75,'association the audit\nmeasures ($D$ on $A$)',ha='center',va='center',fontsize=10.5,color='#666',rotation=-27,bbox=bb,zorder=5)
-ax.text(5.75,6.85,r'Backdoor path  $A \leftarrow N \rightarrow D$  is open unless $N$ is adjusted for',ha='center',fontsize=13.5,color='#c44e52',fontweight='bold')
+ax.text(3.95,2.3,'measurement precision\n'+r'Var$(A \mid A^*, N) = \sigma_w^2 / N$',ha='center',va='center',fontsize=10.5,color='#c44e52',fontweight='bold',bbox=bb,zorder=5)
+ax.text(5.78,3.95,'behavioral\nsignal',ha='left',fontsize=11.5,color='#c44e52',fontweight='bold',bbox=bb,zorder=5)
+ax.text(7.6,5.33,'possible $N \\rightarrow Y$',ha='center',fontsize=10.5,color='#666',style='italic',bbox=bb,zorder=5)
+ax.text(8.0,2.95,'possible\ninvestigation\nintensity ($N \\rightarrow L$)',ha='center',fontsize=10.5,color='#666',style='italic',bbox=bb,zorder=5)
+ax.text(5.55,6.55,'possible $A^* \\rightarrow Y$',ha='center',fontsize=10.5,color='#666',style='italic',bbox=bb,zorder=5)
+ax.text(2.6,-0.15,r'effect under test'+'\n'+r'$A^* \rightarrow D$',ha='center',va='center',fontsize=11.5,color='#1f3864',fontweight='bold',bbox=bb,zorder=5)
+ax.text(2.9,1.25,'association the audit\nmeasures ($D$ on $A$)',ha='center',va='center',fontsize=10.5,color='#666',rotation=-22,bbox=bb,zorder=5)
+ax.text(5.75,7.05,r'Backdoor path  $A \leftarrow N \rightarrow X \rightarrow D$  is open unless $N$ is adjusted for',ha='center',fontsize=13.5,color='#c44e52',fontweight='bold')
 plt.tight_layout(); plt.savefig(str(OUT/'fig1.png'),bbox_inches='tight',dpi=300); plt.close()

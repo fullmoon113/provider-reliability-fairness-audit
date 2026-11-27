@@ -42,6 +42,11 @@ le = pd.read_csv(leie_path, dtype=str)
 le["NPI"] = pd.to_numeric(le["NPI"], errors="coerce").fillna(0).astype(np.int64)
 le = le[le["NPI"] > 0].copy()  # LEIE codes a missing NPI as 0
 le["d"] = pd.to_datetime(le["EXCLDATE"], format="%Y%m%d", errors="coerce")
+# optional: restrict the labels to exclusion types (comma-separated, e.g. LEIE_TYPES=1128a1,1128a3,1128b1,1128b7 for fraud-related types)
+if os.environ.get("LEIE_TYPES"):
+    keep = [t.strip().lower() for t in os.environ["LEIE_TYPES"].split(",")]
+    le = le[le["EXCLTYPE"].str.lower().str.replace(r"[^0-9a-z]", "", regex=True).isin(keep)].copy()
+    print("exclusion types kept:", keep, f"({len(le):,} LEIE records)")
 excl = set(le.loc[le["d"] >= CUT, "NPI"])
 cms["y"] = cms["NPI"].isin(excl).astype(int)
 print(f"providers {len(cms):,}; LEIE-positive after {CUT.date()}: {cms['y'].sum():,}")

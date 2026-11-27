@@ -1,4 +1,5 @@
-"""Builds supplement.tex (Tables S1-S21) from saved outputs and recorded run numbers.
+"""Builds supplement.tex (Tables S1-S25) from saved outputs and recorded run numbers.
+Table ids inside this script are internal; FIRST_CITED at the end renumbers them into the order of first citation in the main text.
 Usage: python make_supplement.py OUTDIR   (then run pdflatex twice in OUTDIR)"""
 import sys, re
 from pathlib import Path
@@ -124,7 +125,7 @@ tab(8, 'Sensitivity to the functional form of panel size',
 w('\\Needspace{14\\baselineskip}'); w('\\subsection*{Table S9. Replication of the aggregation mechanism in CMS data}')
 w('Medicare Physician and Other Practitioners public use file. Two independent year pairs: 2018--2019 and 2021--2022 (1,105,159 providers present in both 2021 and 2022). Providers serving fewer than eleven beneficiaries are suppressed by CMS.\n')
 sub('Panel A. Stability of provider mean beneficiary age by panel size',['Panel size band','SD of year change 2018--19','SD 2021--22','Correlation 2018--19','Correlation 2021--22'],
- [['$\\le25$','4.11','3.99','0.895','0.884'],['26--50','3.01','2.89','0.905','0.900'],['51--100','2.33','2.19','0.915','0.904'],['101--200','1.76','1.64','0.925','0.906'],['201--500','1.26','1.19','0.942','0.920'],['$>500$','0.80','0.83','0.961','0.938']])
+ [['11--20','4.29','4.16','0.892','0.882'],['21--50','3.14','3.03','0.905','0.898'],['51--100','2.33','2.19','0.915','0.904'],['101--200','1.76','1.64','0.925','0.906'],['201--500','1.26','1.19','0.942','0.920'],['$>500$','0.80','0.83','0.961','0.938']])
 sub('Panel B. Within specialty: year-to-year correlation in the lowest and highest panel-size quartile',['Specialty','2018--19 low','2018--19 high','2021--22 low','2021--22 high'],
  [['CRNA','0.606','0.815','0.537','0.769'],['Anesthesiology','0.679','0.911','0.649','0.878'],['Emergency medicine','0.759','0.919','0.728','0.887'],['Physician assistant','0.788','0.933','0.778','0.904'],['Family practice','0.836','0.947','0.812','0.926'],['Physical therapist','0.808','0.884','0.817','0.861'],['Internal medicine','0.846','0.950','0.837','0.940'],['Nurse practitioner','0.852','0.949','0.856','0.934']])
 w('The ordering holds in all eight groups and in both year pairs (sixteen of sixteen comparisons).\n')
@@ -164,6 +165,12 @@ sd = [_json.loads(l) for l in (OUT / 'leie_seeds_output.txt').read_text().splitl
 def rg(k, f=lambda v: f'{v:.2f}'):
     v = np.array([x[k] for x in sd]); return f'{f(v.min())} to {f(v.max())} (median {f(np.median(v))})'
 LEIE_SLOPE_TEX = f'$-{abs(float(sl.group(1))):.2f}$' if float(sl.group(1)) < 0 else f'${float(sl.group(1)):.2f}$'
+_tf = (OUT / 'leie_cms_check_fraudtypes_output.txt').read_text()
+_bxf = _tf[_tf.index('Stage 1-2 [age excluded'):_tf.index('Stage 1-2 [age included')]
+_bif = _tf[_tf.index('Stage 1-2 [age included'):]
+_recf = float(_re2.search(r'recall overall ([\d.]+)', _bxf).group(1)) * 100
+_npos_f = _re2.search(r'LEIE-positive after 2023-01-01: (\d+)', _tf).group(1)
+_slf = _re2.search(r'slope of the top-10% rule among excluded providers: (-?[\d.]+) per SD of log panel size \[(-?[\d.]+), (-?[\d.]+)\], p=([\d.]+)', _tf)
 tab(12, 'External check against the OIG exclusion list (LEIE)',
  'Providers in the 2021--2022 CMS file whose NPI appears in the OIG List of Excluded Individuals and Entities with an exclusion date from 1 January 2023: 416 of 1,105,159. A gradient-boosting classifier flags the top 10\\% of providers by out-of-fold score; odds ratios compare the share flagged among excluded providers. Reference run (seed 42), then the range over seeds 1 to 20 of the model fit.',
  ['Quantity','Reference run','Seeds 1--20: range (median)'],
@@ -178,8 +185,15 @@ tab(12, 'External check against the OIG exclusion list (LEIE)',
   '--', 'Age included as a model input',
   ['Extreme age-mix, flagged: OR [95\\% CI], unadjusted', _or(bi, 'outer quartiles', 'unadjusted'), '--'],
   ['Adjusted for log panel size', _or(bi, 'outer quartiles', r'adj\. panel size'), '--'],
-  ['Outer age deciles, unadjusted', _or(bi, 'outer deciles', 'unadjusted'), '--']],
- spec='p{6.4cm}p{3.6cm}p{4.4cm}', after='Where age is not an input to the detection model, the reference run shows no significant disparity by age-mix; where it is an input, one appears. The size slope among excluded providers is small and depends on the random seed of the model fit: it is nominally significant in the reference run and between $-0.18$ and $+0.10$ across seeds 1 to 20, so no size dependence of the flag against real labels is established by this check. The label itself depends on unit size, because large billers are investigated more often, so the check cannot separate detection bias from label bias. All values come from the software environment pinned in [65]; across the 20 seeds the conclusions do not change. Script: \\texttt{leie\\_cms\\_check.py} (\\texttt{LEIE\\_SEED}, \\texttt{LEIE\\_SEED\\_ONLY}).')
+  ['Outer age deciles, unadjusted', _or(bi, 'outer deciles', 'unadjusted'), '--'],
+  '--', f'Restricted to fraud-related exclusion types (1128(a)(1), (a)(3), (b)(1), (b)(7); {_npos_f} providers), age excluded',
+  ['Excluded providers flagged (recall), \\%', f'{_recf:.1f}', '--'],
+  ['Extreme age-mix, flagged: OR [95\\% CI], unadjusted', _or(_bxf, 'outer quartiles', 'unadjusted'), '--'],
+  ['Adjusted for log panel size', _or(_bxf, 'outer quartiles', r'adj\. panel size'), '--'],
+  ['Size slope of the flag among excluded providers, per SD of log panel size', f'${float(_slf.group(1)):.2f}$ [${float(_slf.group(2)):.2f}$, ${float(_slf.group(3)):.2f}$], $p={float(_slf.group(4)):.3f}$'.replace('$-', '$-'), '--'],
+  ['Age included as an input: extreme age-mix, unadjusted', _or(_bif, 'outer quartiles', 'unadjusted'), '--'],
+  ['Age included, adjusted for log panel size', _or(_bif, 'outer quartiles', r'adj\. panel size'), '--']],
+ spec='p{6.4cm}p{3.6cm}p{4.4cm}', after='Where age is not an input to the detection model, the reference run shows no significant disparity by age-mix; where it is an input, one appears. The size slope among excluded providers is small and depends on the random seed of the model fit: it is nominally significant in the reference run and between $-0.18$ and $+0.10$ across seeds 1 to 20, so no size dependence of the flag against real labels is established by this check. Restricting the exclusion list to fraud-related types gives the same pattern (no significant disparity with age withheld, a nominal one with age as an input), with wide intervals, because only 164 providers remain. The label itself depends on unit size, because large billers are investigated more often, so the check cannot separate detection bias from label bias. All values come from the software environment pinned in [65]; across the 20 seeds the conclusions do not change. Script: \\texttt{leie\\_cms\\_check.py} (\\texttt{LEIE\\_SEED}, \\texttt{LEIE\\_SEED\\_ONLY}).')
 # S13
 import re as _re
 w('\\Needspace{14\\baselineskip}'); w('\\subsection*{Table S13. Errors-in-variables remedies and methods for noisy sensitive attributes, in simulation}')
@@ -220,7 +234,7 @@ def agg(fn):
     d = pd.read_csv(SD / fn); d = d[d.year == 'year 2']
     return d.groupby(['attribute', 'band']).apply(lambda x: pd.Series({'R': np.average(x.median_R, weights=x.providers), 'g': np.average(x.share_R_ge_0_7, weights=x.providers), 'm': np.average(x.mean_m, weights=x.providers)}), include_groups=False).reset_index()
 sw = {f: pd.read_csv(SD / fn) for f, fn in (('5.5', 'cms_stage0_sweep.csv'), ('0', 'cms_stage0_sweep_zero.csv'))}
-bands = ['11-20', '21-50', '51-100', '101+']
+bands = ['11-20', '21-50', '51-100', '101-200', '201-500', '501+']
 w('\\Needspace{22\\baselineskip}'); w('\\subsection*{Table S14. Reliability of multiple aggregate attributes in CMS claims (Stage 0 sweep)}')
 w('Within-specialty analysis in the eight largest specialties, 2022 file, providers with more than ten beneficiaries, mean over specialties weighted by provider count. Bands are numbers of beneficiaries. Age-band shares are the band count divided by the number of beneficiaries; the share female is the female count divided by the sum of the female and male counts; race shares are the category count divided by the sum of the six race counts; non-White is one minus the White share. The sampling variance of a share is $\\bar p(1-\\bar p)/n_i$ with $\\bar p$ the specialty mean, and that of mean age is $\\sigma_w^2/n_i$ with $\\sigma_w=12.52$ (paired-year estimate). $R$ = median reliability; share = share of providers with $R_i\\ge0.7$; $m$ = expected share placed in the wrong group by an outer-versus-middle quartile split. Supp.\\ \\% = share of providers whose count for the category is blank in the file (suppressed, 1--10 beneficiaries, or zero); suppressed counts are set to 5.5 (midpoint) or 0. Mean age, share female and share dual-eligible are never blank; for non-White the White count is the blank count.\n')
 for fill, lab, fn in (('5.5', 'midpoint fill (5.5)', 'cms_stage0_by_specialty_band.csv'), ('0', 'zero fill', 'cms_stage0_by_specialty_band_zero.csv')):
@@ -231,13 +245,13 @@ for fill, lab, fn in (('5.5', 'midpoint fill (5.5)', 'cms_stage0_by_specialty_ba
         if x.empty: continue
         rows.append([a, f'{sp[a]*100:.1f}'] + [f'{x.loc[b,"R"]:.2f}' for b in bands] + [f'{x.loc[b,"g"]:.2f}' for b in bands] + [f'{x.loc[b,"m"]:.2f}' for b in bands])
     w('\\Needspace{18\\baselineskip}'); w(f'\\textbf{{Suppressed counts: {lab}}}'); w('\\begin{center}\\scriptsize\\setlength{\\tabcolsep}{2pt}')
-    w('\\begin{tabular}{lr cccc cccc cccc}\\toprule'); w(r' & & \multicolumn{4}{c}{Median $R$} & \multicolumn{4}{c}{Share $R_i\ge0.7$} & \multicolumn{4}{c}{$m$} \\')
-    w(r'Attribute & Supp.\ \% & 11--20 & 21--50 & 51--100 & 101+ & 11--20 & 21--50 & 51--100 & 101+ & 11--20 & 21--50 & 51--100 & 101+ \\ \midrule')
+    w('\\resizebox{\\linewidth}{!}{\\begin{tabular}{lr cccccc cccccc cccccc}\\toprule'); w(r' & & \multicolumn{6}{c}{Median $R$} & \multicolumn{6}{c}{Share $R_i\ge0.7$} & \multicolumn{6}{c}{$m$} \\')
+    w(r'Attribute & Supp.\ \% & 11--20 & 21--50 & 51--100 & 101--200 & 201--500 & 501+ & 11--20 & 21--50 & 51--100 & 101--200 & 201--500 & 501+ & 11--20 & 21--50 & 51--100 & 101--200 & 201--500 & 501+ \\ \midrule')
     for r in rows: w(' & '.join(r) + r' \\')
-    w('\\bottomrule\\end{tabular}\\end{center}')
+    w('\\bottomrule\\end{tabular}}\\end{center}')
 for fn, ttl in (('cms_stage0_testretest_within.csv', 'Panel A. Year-to-year (2021 to 2022) correlation of the provider value within specialty, by the smaller of the two years\' panel sizes'), ('cms_stage0_testretest.csv', 'Panel B. The same correlation pooled across specialties')):
     tr = pd.read_csv(SD / fn)
-    sub(ttl, ['Attribute','All','11--20','21--50','51--100','101+'], [[r.attribute] + [f'{r[c]:.3f}' for c in ['all','n 11-20','n 21-50','n 51-100','n 101+']] for _, r in tr.iterrows()])
+    sub(ttl, ['Attribute','All','11--20','21--50','51--100','101--200','201--500','501+'], [[r.attribute] + [f'{r[c]:.3f}' for c in ['all','n 11-20','n 21-50','n 51-100','n 101-200','n 201-500','n 501+']] for _, r in tr.iterrows()])
 w('Panel A centers each year\'s value at its specialty mean (providers with the same specialty in both years), so differences between specialties do not count as stability; it rises with panel size for every attribute. It is not a second estimate of $R_i$: beneficiaries who stay with a provider from one year to the next enter both years, so their sampling errors are correlated and the correlation overstates reliability where panels are stable (share female: 0.51 against a computed $R$ of 0.27 in the smallest band). For the non-White share the opposite holds: the correlation (0.38 and 0.26 in the two smallest bands) is far below the computed reliability (0.87 and 0.94), because the White count is blank for most providers with fewer than 100 beneficiaries and the filled values drive the computed variance. Pooled across specialties (differences between specialties treated as true variance), median reliability is 0.84 to 0.99 across attributes and bands; this is the relevant figure only when an audit compares providers across specialties.\n')
 # S15
 tab(15, 'Sensitivity to the detection threshold',
@@ -250,7 +264,7 @@ rows = []
 for ln in (OUT / 'ablation_size_features_output.txt').read_text().split('\n')[1:]:
     m = re.match(r'(\w+)\s+(\w+)\s+(.+?)\s+([\d.]+)\s+(-?[\d.]+)\s+([\d.]+ \[[\d.,]+\])\s+([\d.]+)\s+([\d.]+ \[[\d.,]+\])\s+([\d.]+)', ln)
     if m:
-        g = m.groups(); rows.append([{'LR':'Logit'}.get(g[0], g[0]), 'class weighting' if g[1]=='class_weight' else 'group-wise SMOTE', g[2].replace('(','(').strip(), g[3], g[5].replace(',',', '), g[6], g[7].replace(',',', '), g[8]])
+        g = m.groups(); rows.append([{'LR':'Logit'}.get(g[0], g[0]), 'class weighting' if g[1]=='class_weight' else 'group-wise SMOTE', g[2].replace('(','(').strip(), g[3], g[5].replace(',',', '), ('$<$0.0001' if g[6]=='0.0000' else g[6]), g[7].replace(',',', '), ('$<$0.0001' if g[8]=='0.0000' else g[8])])
 tab(16, 'Ablation: removing panel-size features from the detection model',
  'Extreme age-mix partition. "No direct size (10)" removes the three direct size features (unique inpatient beneficiaries, total unique beneficiaries, claims per beneficiary); "no size-related (8)" also removes the two attending-physician counts. Logit = logistic regression, RF = random forest, XGB = gradient boosting. Detection rate in percent.',
  ['Model','Training','Features','Detect \\%','Unadj.\\ OR [CI]','$p$','Adj.\\ OR [CI]','$p$'], rows, spec='lllrlrlr', small='\\scriptsize',
@@ -316,7 +330,86 @@ tab(21, 'Provider-level features of the detection model',
   '--','Excluded from the feature set',['Inpatient claim count (IP\\_ClaimCount)','inpatient','near-duplicate of IP\\_UniqueBene, $r=0.998$'],['Outpatient claim count (OP\\_ClaimCount)','outpatient','near-duplicate of TotalUniqueBene, $r=0.928$'],['Mean patient age (AvgPatientAge)','composition','sensitive attribute'],['Proportion non-White (MinorityRatio)','composition','sensitive attribute']],
  spec='p{7.6cm}lp{3.6cm}', small='\\footnotesize', after='Maximum pairwise correlation among the thirteen features 0.853; maximum variance inflation factor 5.14. Table 5 of the main text uses inpatient beneficiaries and claims per beneficiary, both size-related features, as alternative controls.')
 
+# S22-S24: additional robustness analyses (src/robustness_extras.py, src/reliability_checks_primary.py, src/mitigation_burden.py RF)
+rep = pd.read_csv(OUT / 'robustness_extras_repeated_cv.csv')
+rows = []
+for nm, g in rep.groupby('part'):
+    rows.append([nm.capitalize() if nm != 'extreme' else 'Extreme age-mix (Q1+Q4)', f'{g.uOR.mean():.3f} ({g.uOR.min():.3f}--{g.uOR.max():.3f})', f'{(g.up < .05).sum()} / 10',
+                 f'{g.aOR.mean():.3f} ({g.aOR.min():.3f}--{g.aOR.max():.3f})', f'{(g.ap < .05).sum()} / 10'])
+rows = [rows[1], rows[0]] if rows[0][0].startswith('Top') else rows
+tab(22, 'Repeated stratified cross-validation',
+ 'Ten repetitions of stratified five-fold cross-validation with different fold assignments (seeds 1000--1009); class-weighted logistic regression, threshold 0.5, detection among the 506 fraud-labeled providers. The single split of the main text gives 0.477 and 1.018 for the extreme age-mix partition. Script: \\texttt{robustness\\_extras.py}.',
+ ['Partition','Unadj.\\ OR, mean (range)','Signif.','Adj.\\ OR, mean (range)','Signif.'],
+ rows, spec='lcccc', small='\\footnotesize', after='The unadjusted deficit is significant in every repetition and the size-adjusted estimate in none.')
+txt = (OUT / 'robustness_extras_output.txt').read_text().split('\n')
+flag = [l.split() for l in txt if re.match(r'^(LR|RF|XGB)\s+0\.\d{3}\s+\d', l)]
+def flagrow(q):
+    # model, detection, OR u [lo, hi] p=.., OR a [lo, hi] p=.. | flagrate, OR u, OR a [lo, hi] p=..
+    return q
+f_rows = []
+for l in txt:
+    m = re.match(r'^(LR|RF|XGB)\s+(\d\.\d{3})\s+(\S+) \[(\S+), (\S+)\] p=(\S+) (\S+) \[(\S+), (\S+)\] p=(\S+) \|\s+(\d\.\d{3})\s+(\S+) (\S+) \[(\S+), (\S+)\] p=(\S+)', l)
+    if m:
+        g = m.groups()
+        f_rows.append([{'LR': 'Logistic regression', 'RF': 'Random forest', 'XGB': 'XGBoost'}[g[0]], g[1], f'{g[2]} [{g[3]}, {g[4]}]', f'{g[6]} [{g[7]}, {g[8]}]', g[10], g[11], f'{g[12]} [{g[13]}, {g[14]}]'])
+tab(23, 'Flag-rule audit, threshold sweep and mitigation with a random-forest base',
+ 'Panel A. The model flags the top 10\\% of all providers by out-of-fold score (the operating point of the exclusion-label check). Detection is the flag rate among the 506 fraud-labeled providers, burden the flag rate among the 4,904 others; extreme age-mix partition; class-weighted models.',
+ ['Model','Detect.','Unadj.\\ OR [95\\% CI]','Adj.\\ OR [95\\% CI]','Flag rate, unlab.','Unadj.\\ OR','Adj.\\ OR [95\\% CI]'],
+ f_rows, spec='lcccccc', small='\\scriptsize', after='')
+pf_ = lambda x: '$<$0.0001' if x == '0.0000' else x
+sw = []
+for l in txt:
+    m = re.match(r'^(RF|XGB)\s+(\d\.\d)\s+(\d\.\d{3})\s+(\d\.\d{3})\s+(\S+)\s+(\d\.\d{3})\s+(\S+)$', l)
+    if m: sw.append([{'RF': 'Random forest', 'XGB': 'XGBoost'}[m[1]], m[2], m[3], m[4], pf_(m[5]), m[6], pf_(m[7])])
+w('Panel B extends Table S15 to the tree ensembles (extreme age-mix partition).\n')
+sub('Panel B. Detection-threshold sweep, random forest and XGBoost',['Model','Threshold','Detection rate','Unadj.\\ OR','$p$','Adj.\\ OR','$p$'], sw, spec='lcccccc', size='\\footnotesize')
+rf = {}
+for ln in (OUT / 'mitigation_burden_RF_output.txt').read_text().split('\n')[1:]:
+    q = ln.split()
+    if len(q) == 4: rf[q[0]] = [float(x) for x in q[1:]]
+def r3(k): return f'{rf[k][0]:.3f}', f'{rf[k][1]:.3f}'
+sub('Panel C. Equalized-odds mitigation with a random-forest base (as Table S4; class-weighted random forest of 300 trees, exponentiated gradient with $\\epsilon=0.02$, 30 iterations, 30 draws; \\texttt{mitigation\\_burden.py RF})',['Metric','Before','After'],
+ [['Equalized-odds difference', *r3('eod')], ['Recall, middle age-mix', *r3('recall_mid')], ['Recall, extreme age-mix', *r3('recall_ext')],
+  ['False-positive rate, middle age-mix', *r3('fpr_mid')], ['False-positive rate, extreme age-mix', *r3('fpr_ext')], ['F1', *r3('f1')]], spec='lrr')
+w('A random forest fits its training data almost perfectly, so the fairness constraint is met in sample and the mitigation leaves out-of-fold error rates unchanged; the logistic-regression base of Table S4 is used because it is the base that responds to the constraint.\n')
+rc = (OUT / 'reliability_checks_primary_output.txt').read_text()
+mm = re.search(r'beneficiaries ([\d,]+); linked to more than one provider: ([\d.]+)%; mean providers per beneficiary ([\d.]+)', rc)
+sh = re.findall(r'^\s+(\S+)\s+(\d+)\s+(\d\.\d{3})\s+(\d\.\d{3})$', rc, re.M)
+rg = re.search(r'sigma_w\^2 \(slope\) ([\d.]+) \[([\d.]+), ([\d.]+)\].*?tau\^2 \(intercept\) ([\d.\-]+) \[([\-\d.]+), ([\d.]+)\]', rc)
+bs = re.search(r'bootstrap unadjusted OR median ([\d.]+), 2.5-97.5 percentile \[([\d.]+), ([\d.]+)\], significant in ([\d.]+)%; adjusted OR median ([\d.]+) \[([\d.]+), ([\d.]+)\], significant in ([\d.]+)%', rc)
+tab(24, 'Direct checks of the reliability model in the primary dataset',
+ f'Panel A. Random split-half reliability of provider mean age. Each provider\'s unique beneficiaries are split at random into two halves; the between-provider correlation of the half means is stepped up with the Spearman--Brown formula (mean over 200 random splits) and compared with the model-implied $R_i=\\tau^2/(\\tau^2+\\sigma_w^2/n_i)$ ($\\tau=0.901$, $\\sigma_w=12.7275$). {mm[2]}\\% of the {mm[1]} beneficiaries are linked to more than one provider (mean {mm[3]} providers). Script: \\texttt{{reliability\\_checks\\_primary.py}}.',
+ ['Panel size','Providers','Split-half reliability','Model-implied mean $R_i$'],
+ [[b.replace('-', '--'), f'{int(n):,}', a, c] for b, n, a, c in sh], spec='lrcc', after='')
+sub('Panels B and C. Variance components by regression, and beneficiary bootstrap of the partition',['Quantity','Estimate','95\\% interval'],
+ [['B: $\\sigma_w^2$ (slope of squared deviation on $1/n_i$)', rg[1], f'{rg[2]}--{rg[3]}'], ['B: $\\tau^2$ (intercept)', rg[4], f'{rg[5]}--{rg[6]}'],
+  ['C: unadjusted OR, bootstrap median', bs[1], f'{bs[2]}--{bs[3]} (significant in {bs[4]}\\%)'], ['C: adjusted OR, bootstrap median', bs[5], f'{bs[6]}--{bs[7]} (significant in {bs[8]}\\%)']], spec='lcc')
+w('Panel B regresses the squared deviation of the measured age from its mean on $1/n_i$ (HC3 intervals). Panel C resamples beneficiaries with replacement (500 samples, so that provider means share their sampling errors), recomputes provider mean ages and the outer-quartile partition, and holds the detection outcomes of the reference model fixed. The REML values of the main text ($\\sigma_w=12.73$, $\\tau^2=0.812$) lie inside the regression intervals; the bootstrap interval of the unadjusted odds ratio excludes 1 and that of the adjusted odds ratio includes it.\n')
+
+# S25: patient-level audit (src/patient_level_audit.py)
+_pl = (OUT / 'patient_level_audit_output.txt').read_text()
+_m0 = _re2.search(r'links[^:]*: ([\d,]+); beneficiaries ([\d,]+); providers (\d+); detection rate over links ([\d.]+)', _pl)
+def _plor(tag, kind):
+    m = _re2.search(tag + r'[^\n]*?' + kind + r' ([\d.]+) \[([\d.]+), ([\d.]+)\]', _pl); return f'{float(m.group(1)):.2f} [{float(m.group(2)):.2f}, {float(m.group(3)):.2f}]'
+tab(25, 'Audit at the beneficiary level with each beneficiary\'s own age',
+ f'Each beneficiary of a fraud-labeled provider is linked to that provider ({_m0.group(1)} links, {_m0.group(2)} beneficiaries, {_m0.group(3)} providers). The outcome is the detection decision of the provider\'s out-of-fold class-weighted logistic regression (detection rate over links {float(_m0.group(4)):.3f}); the sensitive attribute is the beneficiary\'s own age, which carries no aggregation error. Logistic regression with standard errors clustered by provider; the adjusted model adds log(1+panel size).',
+ ['Age partition (beneficiary level)','Unadjusted OR [95\\% CI]','Adjusted OR [95\\% CI]'],
+ [['Outer quartiles versus middle half', _plor('outer quartiles of beneficiary age', 'unadjusted OR'), _plor('outer quartiles of beneficiary age', 'adjusted for log panel size')],
+  ['Top quartile versus the rest', _plor('top quartile of beneficiary age', 'unadjusted OR'), _plor('top quartile of beneficiary age', 'adjusted for log panel size')]],
+ spec='p{6.4cm}p{3.6cm}p{3.6cm}', after='With the true age of each beneficiary, no age disparity is found, in agreement with the size-adjusted estimate at the provider level (1.02): the provider-level deficit of 0.48 is therefore consistent with an artifact of aggregating age, not with different detection of older or younger patients. Script: src/patient\\_level\\_audit.py (requires the raw claims files).')
+
 w('\\end{document}')
+# Renumber the tables into the order of first citation in the main text. The ids used above are internal;
+# FIRST_CITED lists them in the order the main text first cites them (Table S2 is cited only here).
+FIRST_CITED = [6, 9, 21, 19, 22, 7, 14, 18, 20, 24, 10, 3, 16, 12, 1, 15, 5, 8, 23, 17, 13, 4, 25, 11, 2]
+NEWNO = {old_: i + 1 for i, old_ in enumerate(FIRST_CITED)}
+_txt = '\n'.join(out)
+_parts = re.split(r'(?=\\Needspace\{\d+\\baselineskip\}\n\\subsection\*\{Table S\d+\.)', _txt)
+_tail_i = _parts[-1].index('\\end{document}'); _end = _parts[-1][_tail_i:]; _parts[-1] = _parts[-1][:_tail_i]
+_head, _secs = _parts[0], _parts[1:]
+_secs.sort(key=lambda t: NEWNO[int(re.search(r'Table S(\d+)\.', t).group(1))])
+_txt = _head + ''.join(_secs) + _end
+_txt = re.sub(r'(Tables?~?\s?)S(\d+)', lambda m: m.group(1) + 'S' + str(NEWNO[int(m.group(2))]), _txt)
 D.mkdir(parents=True, exist_ok=True)
-(D / 'supplement.tex').write_text('\n'.join(out))
+(D / 'supplement.tex').write_text(_txt)
 print('written', D / 'supplement.tex')

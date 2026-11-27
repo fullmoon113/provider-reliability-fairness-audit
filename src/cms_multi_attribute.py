@@ -19,7 +19,7 @@ For each attribute and each year file:
       mean[p(1-p)/n]; sigma2_true = max(observed - expected, 0); per-provider reliability R_i = sigma2_true/(sigma2_true + p(1-p)/n_i)
   mean age: expected variance with the within-provider SD of the main analysis (12.7275)
 Across the two years, for ALL attributes including the risk score (which has no closed-form sampling variance):
-  year-to-year correlation of the provider value, overall and by panel-size band (the test-retest analogue of Table S9).
+  year-to-year correlation of the provider value, overall and by panel-size band (the test-retest analogue of Table S2).
 Writes output/cms_multi_attribute.csv and prints a summary table.
 """
 import sys

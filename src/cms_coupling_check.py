@@ -17,7 +17,7 @@ d = pd.DataFrame({'v': b.Tot_Benes_22.astype(float), 'age': b.Bene_Avg_Age_22.as
                   'sp': b.Rndrng_Prvdr_Type_22}).dropna()
 d = d[d.v > 10]                                                   # providers with more than ten beneficiaries
 d['dev'] = d.age - d.groupby('sp').age.transform('mean')          # remove specialty means
-bins = [10, 25, 50, 100, 200, 500, 1e9]; lab = ['11-25', '26-50', '51-100', '101-200', '201-500', '>500']
+bins = [10, 20, 50, 100, 200, 500, 1e9]; lab = ['11-20', '21-50', '51-100', '101-200', '201-500', '>500']
 d['band'] = pd.cut(d.v, bins, labels=lab)
 SIGMA_W = 12.73                                                   # within-provider SD of patient age (years)
 
