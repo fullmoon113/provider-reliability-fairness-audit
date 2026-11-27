@@ -1,0 +1,12 @@
+(1) beneficiaries 138,556; linked to more than one provider: 66.1%; mean providers per beneficiary 2.62; provider-beneficiary links 363,300
+
+(2) Random split-half reliability of the full-panel mean age (Spearman-Brown, mean over 200 random splits)
+  panel size  providers  split-half  model R_i (mean)
+       10-19        864       0.049             0.066
+       20-49       1348       0.153             0.137
+       50-99        810       0.284             0.256
+        100+        903       0.469             0.510
+
+(3) (A_i - mean)^2 on 1/n_i: sigma_w^2 (slope) 150.2 [124.9, 175.5], sigma_w 12.25 [11.18, 13.25]; tau^2 (intercept) 1.738 [-0.045, 3.521], tau 1.32
+
+(4) Beneficiary bootstrap (B=500) of the outer-quartile partition, reference detection fixed: reference OR 0.477 (adjusted 1.018); bootstrap unadjusted OR median 0.430, 2.5-97.5 percentile [0.279, 0.657], significant in 92.6%; adjusted OR median 1.044 [0.611, 1.846], significant in 3.0%

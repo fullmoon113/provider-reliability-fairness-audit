@@ -1,0 +1,17 @@
+exclusion types kept: ['1128a1', '1128a3', '1128b1', '1128b7'] (4,335 LEIE records)
+providers 1,105,159; LEIE-positive after 2023-01-01: 164
+Stage 0: observed var 24.73, expected sampling var 1.90, ratio 13.04
+Stage 1-2 [age excluded from model] recall overall 0.232
+  outer quartiles    unadjusted       OR 0.936 [0.428, 2.047] p=0.868
+  outer quartiles    adj. panel size  OR 0.914 [0.416, 2.010] p=0.823
+  outer deciles      unadjusted       OR 0.765 [0.358, 1.633] p=0.488
+  outer deciles      adj. panel size  OR 0.730 [0.337, 1.580] p=0.424
+Stage 1-2 [age included in model] recall overall 0.226
+  outer quartiles    unadjusted       OR 2.739 [1.062, 7.064] p=0.037
+  outer quartiles    adj. panel size  OR 2.507 [0.960, 6.544] p=0.060
+  outer deciles      unadjusted       OR 2.564 [1.215, 5.412] p=0.014
+  outer deciles      adj. panel size  OR 2.264 [1.053, 4.867] p=0.036
+Size-detection slope of the top-10% rule among excluded providers: -0.092 per SD of log panel size [-0.413, 0.229], p=0.5749; recall 0.232
+Stage 3: adjusting for provider-type share instead: OR 1.004, p=0.993
+Stage 5: cut 2024-01-01: positives 134 (rerun with the date as 2nd argument)
+Prop. 1 prediction for the outer-quartile split among excluded providers: OR 1.005 (tau2 22.83)

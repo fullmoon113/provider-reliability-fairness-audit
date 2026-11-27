@@ -1,0 +1,3 @@
+non-White share: mean 0.153, SD of measured share 0.146, tau 0.072, median reliability 0.50
+top-quartile boundary (measured share) 0.214; Pr(G=1) among labeled providers 0.213
+Proposition 1 prediction among the 506 labeled providers: detection 0.844 (group) vs 0.861 (rest), gap -0.0180, OR 0.867

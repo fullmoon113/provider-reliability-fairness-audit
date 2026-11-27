@@ -44,8 +44,8 @@ natural spline        adj OR 1.022 p=0.9416
 decile indicators     adj OR 0.984 p=0.9569
 
 == Stratified gap and Mantel-Haenszel
-quartiles: MH OR 0.949  stratum-weighted gap 0.002
-deciles: MH OR 0.984  stratum-weighted gap 0.020
+quartiles: MH OR 0.949 [0.534, 1.685]  stratum-weighted gap 0.002
+deciles: MH OR 0.984 [0.548, 1.767]  stratum-weighted gap 0.020
 unstratified gap 0.10034338823432654
 
 == Thresholds (probability >= t)

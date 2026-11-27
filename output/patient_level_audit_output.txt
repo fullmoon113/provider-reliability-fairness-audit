@@ -1,0 +1,3 @@
+links (beneficiary, fraud-labeled provider): 122,463; beneficiaries 83,997; providers 506; detection rate over links 0.958
+outer quartiles of beneficiary age: unadjusted OR 1.030 [0.968, 1.096] p=0.347; adjusted for log panel size 1.037 [0.972, 1.107] p=0.269
+top quartile of beneficiary age: unadjusted OR 0.999 [0.931, 1.073] p=0.985; adjusted for log panel size 0.978 [0.908, 1.054] p=0.566
