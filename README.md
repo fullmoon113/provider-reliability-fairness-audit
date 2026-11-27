@@ -13,7 +13,7 @@ proposes a staged audit (Stages 0-5) to tell this apart from real disparity.
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
-pip install -r requirements-lock.txt      # exact versions of the v1.3 outputs (Python 3.13); requirements.txt gives minimum versions
+pip install -r requirements-lock.txt      # exact versions of the archived outputs (Python 3.13); requirements.txt gives minimum versions
 ```
 Run every script **from the repository root**. Results go to `output/`. All runs use fixed seeds (42 unless stated).
 
@@ -35,7 +35,7 @@ python run_all.py --list      # which step needs which input
 ```
 The Medicare flag-rate audit and the LEIE check need two public files that are not redistributed (see `data/DATA.md`):
 `python run_all.py --cms2022 cms2022_extract.csv.gz --leie UPDATED.csv`. The group-wise SMOTE specification of the earlier
-analysis is kept as a sensitivity analysis (`src/02_experiments.py`). To rebuild the feature table from the raw Kaggle files,
+analysis is kept as a sensitivity analysis (`src/sensitivity_groupwise_smote.py`). To rebuild the feature table from the raw Kaggle files,
 put the four `Train_*` CSV files in `data/raw/` and run `python src/01_build_features.py`.
 
 ## Stage 0 and Algorithm 1 on your own table
@@ -55,13 +55,13 @@ for the primary dataset.
 | Script | Reproduces |
 |---|---|
 | `src/01_build_features.py` | Kaggle raw CSVs -> `data/provider_features.csv` (feature table, 5-fold split, partition labels) |
-| `src/02_experiments.py` | Main tables: model performance, unadjusted and panel-size-adjusted odds ratios, specificity test, multi-seed runs, Fairlearn |
+| `src/sensitivity_groupwise_smote.py` | Sensitivity analysis with group-wise SMOTE: model performance, unadjusted and adjusted odds ratios, multi-seed runs, Fairlearn (not the primary specification) |
 | `src/reliability_decomposition.py` | Stage 0: variance decomposition (20.75 = 20.50 + 0.247 by moments; REML tau^2 = 0.812), per-provider reliability |
 | `src/prespecified_partitions.py` | Partition-independent checks: continuous age, each age tail separately, pooled Q1+Q4 (class-weighted model) |
 | `src/cms_coupling_check.py` | Sampling-induced vs substantive coupling of mean patient age and panel size in CMS 2021-2022 |
-| `src/noisy_attribute_comparison.py` | Comparison with noise-tolerant fairness methods on the null simulation (conditional-independence check, noise-corrected gap, equalized-odds post-processing); `SD_TRUE=1.65` / `3.47` and `SIM_REPS` select regime and replicates (Table S13 of the supplement) |
-| `src/table_s1_or.py` | Odds ratios across five random seeds (Table S1) |
-| `src/table4_firth.py`, `src/firth.py`, `src/firth_validate.py` | Seven alternative covariates; Firth penalized-likelihood fits; Holm correction (Table S10). `firth.py` is our own implementation of Firth's logistic regression |
+| `src/noisy_attribute_comparison.py` | Comparison with noise-tolerant fairness methods on the null simulation (conditional-independence check, noise-corrected gap, equalized-odds post-processing); `SD_TRUE=1.65` / `3.47` and `SIM_REPS` select regime and replicates (Table S21 of the supplement) |
+| `src/table_s1_or.py` | Odds ratios across five random seeds (Table S15) |
+| `src/table4_firth.py`, `src/firth.py`, `src/firth_validate.py` | Seven alternative covariates; Firth penalized-likelihood fits; Holm correction (Table S11). `firth.py` is our own implementation of Firth's logistic regression |
 | `src/base_stability.py` | Unadjusted OR across resampling strategies and seeds |
 | `src/pipeline_sensitivity.py` | Sensitivity of the shrunken-attribute result to feature set, resampling and sigma^2_true |
 | `src/refit_sweep.py` | Shrunken attribute with the model refitted on the same partition (the partition used to resample is the one the disparity is evaluated on) |
@@ -75,26 +75,30 @@ for the primary dataset.
 | `src/make_figure_cms.py` | Fig. 4 (CMS replication, `output/fig4.png`; reads `data/cms_*.csv.gz`) |
 | `src/make_fig_exposure.py` | Fig. 5 (exposure by specialty, `output/fig5.png`; reads `output/cms_exposure.csv`) |
 | `src/stage0.py` | Importable Stage 0 check: `stage0_reliability(df, unit, attr, partition)` returns REML tau^2, Cochran Q, per-unit reliability, expected misclassification M and the decision |
-| `src/supplement_runs.py`, `src/sim_panelB.py`, `src/make_supplement.py` | Supplement Tables S1 to S21: re-runs for S1, S4, S5, S8, S10, S11; slope sweep for S7 Panel B; `make_supplement.py OUTDIR` assembles `supplement.tex` from the saved outputs (S18 reads `output/cms_exposure.csv`) |
+| `src/supplement_runs.py`, `src/sim_panelB.py`, `src/make_supplement.py` | Supplement Tables S1 to S25: re-runs for S15, S22, S17, S18, S11, S24; slope sweep for S6 Panel B; `make_supplement.py OUTDIR` assembles `supplement.tex` from the saved outputs (S8 reads `output/cms_exposure.csv`) |
 | `src/audit_common.py`, `src/simparams.py` | Shared helpers; `STRATEGY=class_weight` (default, primary) or `group_smote` selects the training strategy and the matching simulation coefficients |
 | `src/primary_cw.py`, `src/table4_cw.py`, `src/cw_text_numbers.py` | Primary results under class weighting: Tables 2, 4, 5, 10, flagging among negatives, fairness and mitigation, shrinkage, partitions and Holm, thresholds, functional forms |
 | `src/variance_component_inference.py` | REML tau^2, profile interval, Cochran Q and boundary LRT (Stage 0) |
 | `src/rstar_table.py`, `src/misclassification_by_reliability.py` | m(R) and the required reliability R*(eps) |
 | `src/prop1_analytic.py` | Analytic prediction of Proposition 1 for the outer, top-quartile and median partitions |
 | `src/ablation_size_features.py` | Training without panel-size features (13/10/8 features) for the three classifiers |
-| `src/cms_stage0_sweep.py` | Stage 0 for 14 aggregate attributes in CMS files, by panel-size band and within specialty (`--zero` sets suppressed counts to 0) |
-| `src/cms_exposure.py` | Probability that an audit of m fraud-labeled providers reports a spurious disparity, by specialty, for a grid of size-detection slopes (Fig. 5, Table S18) |
-| `src/leie_cms_check.py` | External check on CMS providers later excluded in the OIG LEIE list, including the size slope of the flag among excluded providers (Table S12; needs the LEIE file, see `data/DATA.md`) |
+| `src/cms_stage0_sweep.py` | Stage 0 for 14 aggregate attributes in CMS files, by panel-size band (11-20, 21-50, 51-100, 101-200, 201-500, 501+) and within specialty (`--zero` sets suppressed counts to 0) |
+| `src/cms_exposure.py` | Probability that an audit of m fraud-labeled providers reports a spurious disparity, by specialty, for a grid of size-detection slopes (Fig. 5, Table S8) |
+| `src/leie_cms_check.py` | External check on CMS providers later excluded in the OIG LEIE list, including the size slope of the flag among excluded providers (Table S14; needs the LEIE file, see `data/DATA.md`). `LEIE_TYPES=1128a1,1128a3,1128b1,1128b7` restricts the exclusion types to fraud-related ones (`output/leie_cms_check_fraudtypes_output.txt`) |
 | `src/cms_multi_attribute.py` | Reliability of other aggregate attributes in CMS files |
 | `src/corollary1.py` | Corollary 1: factors eta_G and eta_D and the predicted spurious-disparity rate against simulated cells (`output/corollary1_table.csv`) |
+| `src/prop1_nonwhite.py` | Proposition 1 prediction for the top quartile of the non-White share (beta-binomial model with the REML tau^2; Table 4 text) |
+| `src/robustness_extras.py` | Repeated stratified cross-validation (Table S5), top-10% flag rule and threshold sweep for random forest and XGBoost (Table S19) |
+| `src/patient_level_audit.py` | Audit with each beneficiary's own age as the sensitive attribute, provider-clustered standard errors (Table S23; needs `data/raw/`) |
+| `src/reliability_checks_primary.py` | Random split-half reliability, regression of squared deviations on 1/n, beneficiary bootstrap of the partition (Table S10; needs `data/raw/`) |
 | `src/table12.py`, `src/table12_cms.py` | Output of Stage 0 and Algorithm 1 for the primary dataset and for CMS flag-rate audits |
-| `src/table4b.py`, `src/mitigation_burden.py` | Detection and false-positive audit by partition; recall, false-positive rate, flag rate and precision before and after mitigation |
+| `src/table4b.py`, `src/mitigation_burden.py` | Detection and false-positive audit by partition; recall, false-positive rate, flag rate and precision before and after mitigation (`mitigation_burden.py RF` uses a random-forest base, Table S19 Panel C) |
 | `src/prop2_check.py`, `src/prop2_observed.py` | Proposition 2: partitions on posterior draws, posterior class probabilities and posterior means, in simulation and in the primary dataset |
 | `src/flag_rate_common.py`, `src/flag_rate_predict.py`, `src/flag_rate_observe.py` | Medicare flag-rate audit: predictions are written first (`output/flag_rate_predictions.csv`, hash in `output/flag_rate_prereg.sha256`), observed associations afterwards |
 | `src/make_cms2022_extract.py` | Extracts the columns used from the CMS 2022 "by Provider" file |
 | `src/beneficiary_level_variance.py`, `src/permutation_null.py` | Beneficiary-level tests of the true between-provider variance; random re-linking of ages to providers (need `data/raw/`) |
 | `run_all.py` | One command for every step above that its inputs allow |
-| `src/planted_effect_power.py`, `src/eiv_remedy.py` | Type I error and power with a planted true effect; errors-in-variables and regression-calibration comparison (Table S13) |
+| `src/planted_effect_power.py`, `src/eiv_remedy.py` | Type I error and power with a planted true effect; errors-in-variables and regression-calibration comparison (Table S21) |
 
 Scripts `refit_sweep.py`, `fpr_class_weighting.py`, `pooled_smote_no_resampling.py`, `fpr_by_strategy.py` and
 `make_figures_1_2.py` (and `prespecified_partitions.py`) load one another by file name; keep them together in `src/`.
@@ -115,7 +119,7 @@ CMS Medicare "by Provider" public use files.
   base learner gave results that varied across seeds (it worsened the equalized-odds difference for one of three seeds), and
   it was not pursued; no result for it is reported.
 * The LEIE check (`src/leie_cms_check.py`) fits a classifier on a random split. Its point estimates move with the seed, most of
-  all the size slope among excluded providers (Table S12 reports the reference run and the range over 20 seeds).
+  all the size slope among excluded providers (Table S14 reports the reference run and the range over 20 seeds).
 
 ## Numerical sensitivity
 

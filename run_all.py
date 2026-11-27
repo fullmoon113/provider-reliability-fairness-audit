@@ -49,7 +49,9 @@ CORE = [
     ('cms_coupling_check.py', [], {}, None),
     ('cms_exposure.py', [], reps, None),
     ('corollary1.py', [], {}, None),
-    ('02_experiments.py', [], {}, None),
+    ('prop1_nonwhite.py', [], {}, None),
+    ('robustness_extras.py', [], {}, None),
+    ('sensitivity_groupwise_smote.py', [], {}, None),
     ('make_figures_1_2.py', [], {}, None),
     ('make_fig2_cw.py', [], {}, None),
     ('make_fig_null.py', [], {}, None),
@@ -57,7 +59,9 @@ CORE = [
     ('make_fig_exposure.py', [], {}, None),
 ]
 OPTIONAL = [
+    ('reliability_checks_primary.py', [], {}, ('data/raw (Kaggle Train_*.csv)', RAW.exists())),
     ('permutation_null.py', ['50' if QUICK else '5000'], {}, ('data/raw (Kaggle Train_*.csv)', RAW.exists())),
+    ('patient_level_audit.py', [], {}, ('data/raw (Kaggle Train_*.csv)', RAW.exists())),
     ('flag_rate_predict.py', [CMS22 or '', LEIE or ''], {}, ('--cms2022 and --leie', bool(CMS22 and LEIE))),
     ('flag_rate_observe.py', [CMS22 or '', LEIE or ''], {}, ('--cms2022 and --leie', bool(CMS22 and LEIE))),
     ('table12_cms.py', [CMS22 or ''], {}, ('--cms2022', bool(CMS22))),
@@ -65,7 +69,8 @@ OPTIONAL = [
     ('leie_cms_check.py', [LEIE or ''], {}, ('--leie', bool(LEIE))),
     ('cms_stage0_sweep.py', [CMS22 or ''], {}, ('--cms2022', bool(CMS22))),
 ]
-steps = CORE + [s for s in OPTIONAL if s[0] != 'mitigation_burden.py']
+SLOW = [] if QUICK else [('mitigation_burden.py', ['RF'], {}, None)]      # random-forest base of the mitigation (several minutes)
+steps = CORE + SLOW + [s for s in OPTIONAL if s[0] != 'mitigation_burden.py']
 if LIST:
     for s, a, e, need in steps:
         print(f'{s:42s} needs: {need[0] if need else "repository files only"}')

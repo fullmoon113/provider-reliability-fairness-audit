@@ -35,7 +35,7 @@ then run `python src/01_build_features.py`; it checks the result (5,410 provider
 
 Pass the first two as arguments, for example `python run_all.py --cms2022 cms2022_extract.csv.gz --leie UPDATED.csv`.
 The LEIE check fits a classifier on a random split, so its point estimates, in particular the size slope among excluded providers,
-change with the seed (Table S12 of the supplement reports the reference run and the range over 20 seeds).
+change with the seed (Table S14 of the supplement reports the reference run and the range over 20 seeds).
 
 ## Large intermediate file (not in the GitHub repository)
 
